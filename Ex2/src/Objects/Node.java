@@ -4,9 +4,18 @@ import api.GeoLocation;
 import api.NodeData;
 
 public class Node implements NodeData {
+    private int key;
+    private GeoLocation position;
+    private double weight;
+    private String info;
+    private int tag;
     
-    public Node(){
-    
+    public Node(int key, GeoLocation position, double weight, String info, int tag) {
+        this.key = key;
+        this.position = position;
+        this.weight = weight;
+        this.info = info;
+        this.tag = tag;
     }
     
     /**
@@ -16,7 +25,7 @@ public class Node implements NodeData {
      */
     @Override
     public int getKey() {
-        return 0;
+        return this.key;
     }
     
     /**
@@ -26,7 +35,7 @@ public class Node implements NodeData {
      */
     @Override
     public GeoLocation getLocation() {
-        return null;
+        return this.position;
     }
     
     /**
@@ -36,7 +45,7 @@ public class Node implements NodeData {
      */
     @Override
     public void setLocation(GeoLocation p) {
-    
+        this.position = p;
     }
     
     /**
@@ -46,7 +55,7 @@ public class Node implements NodeData {
      */
     @Override
     public double getWeight() {
-        return 0;
+        return this.weight;
     }
     
     /**
@@ -56,7 +65,7 @@ public class Node implements NodeData {
      */
     @Override
     public void setWeight(double w) {
-    
+        this.weight = w;
     }
     
     /**
@@ -66,7 +75,7 @@ public class Node implements NodeData {
      */
     @Override
     public String getInfo() {
-        return null;
+        return this.info;
     }
     
     /**
@@ -76,7 +85,7 @@ public class Node implements NodeData {
      */
     @Override
     public void setInfo(String s) {
-    
+        this.info = s;
     }
     
     /**
@@ -87,7 +96,7 @@ public class Node implements NodeData {
      */
     @Override
     public int getTag() {
-        return 0;
+        return this.tag;
     }
     
     /**
@@ -98,6 +107,6 @@ public class Node implements NodeData {
      */
     @Override
     public void setTag(int t) {
-    
+        this.tag = t;
     }
 }
