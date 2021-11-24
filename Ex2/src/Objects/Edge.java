@@ -3,9 +3,27 @@ package Objects;
 import api.EdgeData;
 
 public class Edge implements EdgeData {
-    
-    public Edge(){
-    
+    private int src;
+    private int dest;
+    private double weight;
+    private String info;
+    private int tag;
+
+    public Edge(int src, int dest, double weight, String info, int tag) {
+        this.src = src;
+        this.dest = dest;
+        this.weight = weight;
+        this.info = info;
+        this.tag = tag;
+    }
+
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "src=" + src +
+                ", dest=" + dest +
+                ", weight=" + weight +
+                '}';
     }
     
     /**
@@ -15,7 +33,7 @@ public class Edge implements EdgeData {
      */
     @Override
     public int getSrc() {
-        return 0;
+        return this.src;
     }
     
     /**
@@ -25,7 +43,7 @@ public class Edge implements EdgeData {
      */
     @Override
     public int getDest() {
-        return 0;
+        return this.dest;
     }
     
     /**
@@ -33,7 +51,7 @@ public class Edge implements EdgeData {
      */
     @Override
     public double getWeight() {
-        return 0;
+        return this.weight;
     }
     
     /**
@@ -43,7 +61,7 @@ public class Edge implements EdgeData {
      */
     @Override
     public String getInfo() {
-        return null;
+        return this.info;
     }
     
     /**
@@ -53,7 +71,7 @@ public class Edge implements EdgeData {
      */
     @Override
     public void setInfo(String s) {
-    
+        this.info = s;
     }
     
     /**
@@ -64,7 +82,7 @@ public class Edge implements EdgeData {
      */
     @Override
     public int getTag() {
-        return 0;
+        return this.tag;
     }
     
     /**
@@ -75,6 +93,6 @@ public class Edge implements EdgeData {
      */
     @Override
     public void setTag(int t) {
-    
+        this.tag = t;
     }
 }
