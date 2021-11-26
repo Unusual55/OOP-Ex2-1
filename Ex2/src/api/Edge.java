@@ -11,11 +11,16 @@ public class Edge implements EdgeData {
     private int tag;
     
     public Edge(int src, int dest, double weight, String info, int tag) {
+        if (weight < 0) throw new IllegalArgumentException("Weight cannot be negative");
         this.src = src;
         this.dest = dest;
         this.weight = weight;
         this.info = info;
         this.tag = tag;
+    }
+    
+    public Edge(int src, int dest, double weight) {
+        this(src, dest, weight, "", -1);
     }
     
     public Edge(EdgeData other) {

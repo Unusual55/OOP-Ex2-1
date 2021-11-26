@@ -123,7 +123,7 @@ public class Node implements NodeData {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
-        NodeData node = (Node)other;
+        Node node = (Node)other;
         return this.key == node.getKey() &&
                 this.position.equals(node.getLocation()) &&
                 Double.compare(this.weight, node.getWeight()) == 0 &&
