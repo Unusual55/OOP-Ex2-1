@@ -130,7 +130,8 @@ public class DWGraph implements DirectedWeightedGraph {
         return new Iterator<EdgeData>() {
             private final Iterator<HashMap<Integer, EdgeData>> it = edges.values().iterator();
             private Iterator<EdgeData> edge = null;
-            
+            public int startModeCounter = modeCount;
+    
             @Override
             public boolean hasNext() {
                 return it.hasNext() && (edge == null || edge.hasNext());
@@ -138,6 +139,8 @@ public class DWGraph implements DirectedWeightedGraph {
             
             @Override
             public EdgeData next() {
+                // TODO: Implement a runtime exception if the graph was changed since the iterator was constructed.
+//                if (modeCount != startModeCounter) throw new RuntimeException("Graph was changed since iterator was constructed");
                 if (edge == null || !edge.hasNext()) {
                     edge = it.next().values().iterator();
                 }
