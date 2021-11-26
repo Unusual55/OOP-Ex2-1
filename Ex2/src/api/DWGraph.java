@@ -171,7 +171,7 @@ public class DWGraph implements DirectedWeightedGraph {
         if (!this.nodes.containsKey(key)) return null;
         int sz = this.edges.get(key).size();
         this.edges.remove(key);
-        this.nodeCount -= sz;
+        this.edgeCount -= sz;
         this.modeCount += sz;
         for (int i : this.edges.keySet()) {
             if (this.edges.get(i).containsKey(key)) {
