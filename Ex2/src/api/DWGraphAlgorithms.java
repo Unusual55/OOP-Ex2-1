@@ -1,11 +1,14 @@
 package api;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
+    DirectedWeightedGraph graph;
+    
     public DWGraphAlgorithms() {
-        
+        this.graph = new DWGraph();
     }
     
     /**
@@ -15,7 +18,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public void init(DirectedWeightedGraph g) {
-    
+        this.graph = g;
     }
     
     /**
@@ -25,7 +28,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public DirectedWeightedGraph getGraph() {
-        return null;
+        return this.graph;
     }
     
     /**
@@ -35,7 +38,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public DirectedWeightedGraph copy() {
-        return null;
+        return new DWGraph(this.graph);
     }
     
     /**
@@ -125,5 +128,22 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     @Override
     public boolean load(String file) {
         return false;
+    }
+    
+    // https://en.wikipedia.org/wiki/Graph_traversal#Depth-first_search
+    // https://en.wikipedia.org/wiki/Depth-first_search
+    private void DFS(NodeData v) {
+        // label v as discovered
+        v.setTag(1);
+        // for all directed edges from v to w that are in G.adjacentEdges(v) do
+        for (Iterator<EdgeData> it = this.graph.edgeIter(v.getKey()); it.hasNext(); ) {
+            EdgeData e = it.next();
+            NodeData w = this.graph.getNode(e.getDest());
+            // if vertex w is not labeled as discovered then
+            if (w.getTag() != 1) {
+                // recursively call DFS(G, w)
+                this.DFS(w);
+            }
+        }
     }
 }
