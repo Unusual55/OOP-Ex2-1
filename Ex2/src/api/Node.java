@@ -1,6 +1,8 @@
 package api;
 
 
+import com.google.gson.Gson;
+
 import java.util.Objects;
 
 public class Node implements NodeData {
@@ -9,7 +11,14 @@ public class Node implements NodeData {
     private double weight;
     private String info;
     private int tag;
-    
+
+    public Node(GeoLocation position, int id){
+        this.position=position;
+        this.key=id;
+        this.weight=0;
+        this.info = "";
+        this.tag = 1;
+    }
     public Node(int key, GeoLocation position, double weight, String info, int tag) {
         this.key = key;
         this.position = position;
@@ -139,5 +148,12 @@ public class Node implements NodeData {
     @Override
     public int hashCode() {
         return Objects.hash(this.key, this.position, this.weight, this.info, this.tag);
+    }
+
+    public StringBuilder JsonFormat(){
+        StringBuilder sb=new StringBuilder();
+        sb.append("{");sb.append("pos:");sb.append(this.position.x());sb.append(",");sb.append(this.position.y());
+        sb.append(",");sb.append(this.position.z());sb.append(",");sb.append("id:");sb.append(this.key);
+        return sb;
     }
 }
