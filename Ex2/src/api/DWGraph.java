@@ -134,13 +134,13 @@ public class DWGraph implements DirectedWeightedGraph {
     
             @Override
             public boolean hasNext() {
+                if (modeCount != startModeCounter) throw new RuntimeException("Graph was changed since iterator was constructed");
                 return it.hasNext() && (edge == null || edge.hasNext());
             }
             
             @Override
             public EdgeData next() {
-                // TODO: Implement a runtime exception if the graph was changed since the iterator was constructed.
-//                if (modeCount != startModeCounter) throw new RuntimeException("Graph was changed since iterator was constructed");
+                if (modeCount != startModeCounter) throw new RuntimeException("Graph was changed since iterator was constructed");
                 if (edge == null || !edge.hasNext()) {
                     edge = it.next().values().iterator();
                 }
