@@ -2,8 +2,35 @@ package api;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
+    
+    public static void main(String[] args) {
+        DWGraph g = new DWGraph();
+        g.addNode(new Node(1, new Point3D(), 0.54541, "", -1));
+        g.addNode(new Node(2, new Point3D(), 0.26544, "", -1));
+        g.addNode(new Node(3, new Point3D(), 0.46687, "", -1));
+        g.addNode(new Node(4, new Point3D(), 0.34878, "", -1));
+        g.addNode(new Node(5, new Point3D(), 0.94835, "", -1));
+        g.addNode(new Node(6, new Point3D(), 0.85845, "", -1));
+        g.addNode(new Node(7, new Point3D(), 0.61135, "", -1));
+        
+        g.connect(1,2, 1);
+        g.connect(1,3, 1);
+        g.connect(2,4, 1);
+        g.connect(2,5, 1);
+        g.connect(3,6, 1);
+        
+        DWGraphAlgorithms alg = new DWGraphAlgorithms();
+        alg.init(g);
+        
+        alg.DFS(g.getNode(1), (NodeData v) -> {
+            Node w = (Node) v;
+            System.out.println(w);
+        });
+    }
+    
     
     DirectedWeightedGraph graph;
     
@@ -132,7 +159,9 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     // https://en.wikipedia.org/wiki/Graph_traversal#Depth-first_search
     // https://en.wikipedia.org/wiki/Depth-first_search
-    private void DFS(NodeData v) {
+    public void DFS(NodeData v, Consumer<NodeData> func) {
+        func.accept(v);
+        int TAG = v.getTag();
         // label v as discovered
         v.setTag(1);
         // for all directed edges from v to w that are in G.adjacentEdges(v) do
@@ -142,8 +171,13 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
             // if vertex w is not labeled as discovered then
             if (w.getTag() != 1) {
                 // recursively call DFS(G, w)
-                this.DFS(w);
+                this.DFS(w, func);
             }
         }
+        v.setTag(TAG);
+    }
+    
+    public void DFS(NodeData v) {
+        this.DFS(v, (NodeData w) -> {});
     }
 }
