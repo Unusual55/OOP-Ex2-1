@@ -1,35 +1,12 @@
 package api;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.function.Consumer;
 
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
-    
-    public static void main(String[] args) {
-        DWGraph g = new DWGraph();
-        g.addNode(new Node(1, new Point3D(), 0.54541, "", -1));
-        g.addNode(new Node(2, new Point3D(), 0.26544, "", -1));
-        g.addNode(new Node(3, new Point3D(), 0.46687, "", -1));
-        g.addNode(new Node(4, new Point3D(), 0.34878, "", -1));
-        g.addNode(new Node(5, new Point3D(), 0.94835, "", -1));
-        g.addNode(new Node(6, new Point3D(), 0.85845, "", -1));
-        g.addNode(new Node(7, new Point3D(), 0.61135, "", -1));
-        
-        g.connect(1,2, 1);
-        g.connect(1,3, 1);
-        g.connect(2,4, 1);
-        g.connect(2,5, 1);
-        g.connect(3,6, 1);
-        
-        DWGraphAlgorithms alg = new DWGraphAlgorithms();
-        alg.init(g);
-        
-        alg.DFS(g.getNode(1), (NodeData v) -> {
-            Node w = (Node) v;
-            System.out.println(w);
-        });
-    }
     
     
     DirectedWeightedGraph graph;
@@ -68,7 +45,24 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         return new DWGraph(this.graph);
     }
     
+    
+    // Private class used for the isConnected method, We made this in order to not change the Node Data type.
+    private class IsConnectedProps {
+        public int index;
+        public int lowlink;
+        public boolean onstack;
+        
+        public IsConnectedProps(int index, int lowlink, boolean onstack) {
+            this.index = index;
+            this.lowlink = lowlink;
+            this.onstack = onstack;
+        }
+    }
+    
+    
     /**
+     * https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+     * <p>
      * Returns true if and only if (iff) there is a valid path from each node to each
      * other node. NOTE: assume directional graph (all n*(n-1) ordered pairs).
      *
@@ -76,7 +70,71 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public boolean isConnected() {
-        return false;
+        HashMap<Integer, Integer> components = this.stronglyConnectedComponents();
+        int prev = -1;
+        for (Integer c : components.values()) {
+            if (prev != -1 && prev != c) {
+                return false;
+            }
+            prev = c;
+        }
+        return true;
+    }
+    
+    
+    private void isConnected(NodeData v, int[] globals, HashMap<Integer, IsConnectedProps> props, Stack<NodeData> stack, HashMap<Integer, Integer> output) {
+        int key = v.getKey();
+        IsConnectedProps pv = props.get(key);
+        pv.index = globals[0];
+        pv.lowlink = globals[0];
+        globals[0]++;
+        stack.push(v);
+        pv.onstack = true;
+        
+        for (Iterator<EdgeData> it = this.graph.edgeIter(key); it.hasNext(); ) {
+            EdgeData edge = it.next();
+            NodeData w = this.graph.getNode(edge.getDest());
+            IsConnectedProps pw = props.get(w.getKey());
+            if (pw.index == -1) {
+                this.isConnected(w, globals, props, stack, output);
+                pv.lowlink = Math.min(pv.lowlink, pw.lowlink);
+            } else if (pw.onstack) {
+                pv.lowlink = Math.min(pv.lowlink, pw.index);
+            }
+        }
+        if (pv.lowlink == pv.index) {
+            NodeData w;
+            globals[1]++;
+            do {
+                w = stack.pop();
+                output.put(w.getKey(), globals[1]);
+                props.get(w.getKey()).onstack = false;
+            } while (!v.equals(w));
+        }
+    }
+    
+    private HashMap<Integer, Integer> stronglyConnectedComponents() {
+        HashMap<Integer, IsConnectedProps> props = new HashMap<>();
+        HashMap<Integer, Integer> components = new HashMap<>();
+        int index = 0;
+        int numOfComponents = 0;
+        int[] globals = new int[]{index, numOfComponents};
+        Stack<NodeData> stack = new Stack<>();
+        
+        for (Iterator<NodeData> it = this.graph.nodeIter(); it.hasNext(); ) {
+            NodeData v = it.next();
+            props.put(v.getKey(), new IsConnectedProps(-1, -1, false));
+            components.put(v.getKey(), -1);
+        }
+        
+        for (Iterator<NodeData> it = this.graph.nodeIter(); it.hasNext(); ) {
+            NodeData v = it.next();
+            IsConnectedProps pv = props.get(v.getKey());
+            if (pv.index == -1) {
+                this.isConnected(v, globals, props, stack, components);
+            }
+        }
+        return components;
     }
     
     /**
@@ -178,6 +236,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     }
     
     public void DFS(NodeData v) {
-        this.DFS(v, (NodeData w) -> {});
+        this.DFS(v, (NodeData w) -> {
+        });
     }
 }
