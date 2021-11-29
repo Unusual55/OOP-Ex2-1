@@ -26,12 +26,11 @@ public class DWGraph implements DirectedWeightedGraph {
     
     public DWGraph(DirectedWeightedGraph other) {
         this.nodes = new HashMap<>();
+        this.edges = new HashMap<>();
         for (Iterator<NodeData> it = other.nodeIter(); it.hasNext(); ) {
             NodeData node = it.next();
             this.addNode(node);
         }
-        
-        this.edges = new HashMap<>();
         for (Iterator<NodeData> it = this.nodeIter(); it.hasNext(); ) {
             NodeData node = it.next();
             int key = node.getKey();
