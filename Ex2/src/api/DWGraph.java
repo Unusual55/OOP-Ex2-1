@@ -2,6 +2,11 @@ package api;
 
 import java.util.*;
 
+/**
+ * This class represent graph data structure- G=(V,E) G- graph object, V- vertices, E- edges
+ * The properties of graph are HashMap which contain the Nodes, HashMap which contain the edges,
+ * counter of nodes, counter of edges and counter of changes in the graph
+ */
 public class DWGraph implements DirectedWeightedGraph {
     
     private HashMap<Integer, NodeData> nodes;
@@ -255,7 +260,11 @@ public class DWGraph implements DirectedWeightedGraph {
     public int getMC() {
         return this.modeCount;
     }
-    
+
+    /**
+     * This function returns a string representation of this object
+     * @return String that represent this object
+     */
     @Override
     public String toString() {
         StringBuilder nodesValue = new StringBuilder("{");
@@ -283,7 +292,12 @@ public class DWGraph implements DirectedWeightedGraph {
                 ", edges=" + edgesValue +
                 '}';
     }
-    
+
+    /**
+     * This function get a object as input and compare it to this object
+     * @param o The object which we compare to this object
+     * @return True if they are equal, otherwise false
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -295,7 +309,12 @@ public class DWGraph implements DirectedWeightedGraph {
                 this.nodeEquals(other.nodeIter()) &&
                 this.edgeEquals(other.edgeIter());
     }
-    
+
+    /**
+     * This function compare between two iterators of Nodes
+     * @param other Iterator of Nodes
+     * @return True if they are equal, otherwise false
+     */
     private boolean nodeEquals(Iterator<NodeData> other) {
         Iterator<NodeData> thisIter = this.nodeIter();
         while (thisIter.hasNext() && other.hasNext()) {
@@ -307,7 +326,12 @@ public class DWGraph implements DirectedWeightedGraph {
         }
         return true;
     }
-    
+
+    /**
+     * This function compare between two iterators of Edges
+     * @param other Iterator of edges
+     * @return True if they are equal, otherwise false
+     */
     private boolean edgeEquals(Iterator<EdgeData> other) {
         Iterator<EdgeData> thisIter = this.edgeIter();
         while (thisIter.hasNext() && other.hasNext()) {
