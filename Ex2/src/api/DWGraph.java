@@ -352,4 +352,44 @@ public class DWGraph implements DirectedWeightedGraph {
     public int hashCode() {
         return Objects.hash(this.nodes, this.edges, this.nodeCount, this.edgeCount, this.modeCount);
     }
+
+    /**
+     * This function returns this object
+     * @return This object
+     */
+    public DWGraph getGraph(){
+        return this;
+    }
+
+    /**
+     * This function return the in-degreee of selected node
+     * @param id the id of the selected node
+     * @return The in-degree
+     * @throws Exception will be thrown if there is no such node
+     */
+    public int EdgeFromNodeCount(int id) throws Exception {
+        if(!this.nodes.containsKey(id)){
+            throw new Exception("There is no such node in this graph.");
+        }
+        return this.edges.get(id).size();
+    }
+
+    /**
+     * This function returns the out-degree of selected node
+     * @param id The id of the selected node
+     * @return The out-degree of selected node
+     * @throws Exception will be thrown if there is no such node
+     */
+    public int EdgeToNodeCount(int id) throws Exception {
+        if(!this.nodes.containsKey(id)){
+            throw new Exception("There is no such node in this graph");
+        }
+        int counter=0;
+        for (int i : this.edges.keySet()) {
+            if (this.edges.get(i).containsKey(id)) {
+                counter++;
+            }
+        }
+        return counter;
+    }
 }

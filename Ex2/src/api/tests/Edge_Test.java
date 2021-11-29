@@ -28,6 +28,24 @@ public class Edge_Test {
         }
         return edges;
     }
+    Edge[] Generate_Edges(int count){
+        Edge[] edges;
+        Random rnd= new Random();
+        int minC =10, maxC=100;
+        double minV=0, maxV=100.0;
+        int len= count;
+        edges=new Edge[len];
+        for (int i = 0; i < len; i++) {
+            int src= rnd.nextInt(len-1-0)+0;
+            int dest=src;
+            while(dest==src){
+                dest=rnd.nextInt(len-1-0)+0;
+            }
+            double weight=rnd.nextDouble()*len;
+            edges[i]=new Edge(src,dest,weight);
+        }
+        return edges;
+    }
     @Test
     void Constructor_Test(){
         Edge e1=new Edge(1,3,1.555,"Happy Edge1", 1);

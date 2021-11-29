@@ -151,6 +151,42 @@ public class DWGraph_Test {
         }
         return nodes;
     }
+    Edge[] Generate_Edges(){
+        Edge[] edges;
+        Random rnd= new Random();
+        int minC =10, maxC=100;
+        double minV=0, maxV=100.0;
+        int len= rnd.nextInt(maxC-minC)+minC;
+        edges=new Edge[len];
+        for (int i = 0; i < len; i++) {
+            int src= rnd.nextInt(len-1-0)+0;
+            int dest=src;
+            while(dest==src){
+                dest=rnd.nextInt(len-1-0)+0;
+            }
+            double weight=rnd.nextDouble()*len;
+            edges[i]=new Edge(src,dest,weight);
+        }
+        return edges;
+    }
+    Edge[] Generate_Edges(int count){
+        Edge[] edges;
+        Random rnd= new Random();
+        int minC =10, maxC=100;
+        double minV=0, maxV=100.0;
+        int len= count;
+        edges=new Edge[len];
+        for (int i = 0; i < len; i++) {
+            int src= rnd.nextInt(len-1-0)+0;
+            int dest=src;
+            while(dest==src){
+                dest=rnd.nextInt(len-1-0)+0;
+            }
+            double weight=rnd.nextDouble()*len;
+            edges[i]=new Edge(src,dest,weight);
+        }
+        return edges;
+    }
     @Test
     void Constructors_Test(){
         DWGraph g= this.Generate_Graph();
@@ -181,7 +217,40 @@ public class DWGraph_Test {
         DWGraph g=this.Generate_Graph(20);
         Node[] extra= this.Generate_Nodes(5,20);
         for (int i = 0; i <5 ; i++) {
+            g.addNode(extra[i]);
             Assertions.assertEquals(true, extra[i] instanceof Node);
+        }
+        Assertions.assertEquals(false, 20==g.nodeSize());
+    }
+    @Test
+    void Connect_Test(){
+        DWGraph g=this.Generate_Graph(20);
+        Edge[] extra=this.Generate_Edges(10);
+        int precount=g.edgeSize(), premc=g.getMC();
+        for (Edge e: extra) {
+            g.connect(e.getSrc(),e.getDest(),e.getWeight());
+            Assertions.assertEquals(true, e instanceof Edge);
+        }
+        Assertions.assertEquals(true, g.edgeSize()<=precount+10);
+        Assertions.assertEquals(true,premc+10==g.getMC());
+    }
+    @Test
+    void Remove_Node_Test() throws Exception {
+        DWGraph g=this.Generate_Graph(100);
+        Random rnd=new Random();
+        int remove=rnd.nextInt(99-0)+0;
+        Node removed= (Node) g.getNode(remove);
+        try {
+            int degree = g.EdgeFromNodeCount(remove) + g.EdgeToNodeCount(remove);
+            int premc=g.getMC();
+            int precount=g.edgeSize();
+            g.removeNode(remove);
+            Assertions.assertEquals(true, precount-degree==g.edgeSize());
+            Assertions.assertEquals(true, premc+degree+1==g.getMC());
+            Assertions.assertThrows(Exception.class, ()-> {g.EdgeFromNodeCount(remove);});
+        }
+        catch (Exception e){
+            System.out.println("There is no such node in the graph");
         }
     }
 }
