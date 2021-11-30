@@ -1,16 +1,14 @@
 package tests;
+
 import DataStructures.*;
-import api.*;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Objects;
 import java.util.Random;
 
-public class DWGraph_Test {
+import static org.junit.jupiter.api.Assertions.*;
+
+class DWGraphAlgorithmsTest {
     DWGraph Generate_Graph() {
         Random rnd = new Random();
         int minC = 1000000, maxC = 2000000;
@@ -192,132 +190,60 @@ public class DWGraph_Test {
         return edges;
     }
     @Test
-    void Constructors_Test(){
-        DWGraph g= this.Generate_Graph();
-        DWGraph gcopy=new DWGraph(g);
-        Assertions.assertEquals(true, g instanceof DWGraph);
-        Assertions.assertEquals(true, gcopy instanceof DWGraph);
-    }
-    @Test
-    void Getters_Test(){
-        DWGraph g=this.Generate_Graph(1000000);
-        HashMap<Integer, NodeData> nodemap= g.getNodes();
-        HashMap<Integer, HashMap<Integer, EdgeData>> edgemap=g.getEdges();
-        Iterator<NodeData> nodes=g.nodeIter();
-        int node=0, edge=0;
-        while(nodes.hasNext()){
-            node++;
-            Iterator<EdgeData> edges=g.edgeIter(node-1);
-            while(edges.hasNext()){
-                edge++;
-                Edge e=(Edge) edges.next();
-                Assertions.assertEquals(true, e instanceof Edge);
-                Assertions.assertEquals(true, e.equals(edgemap.get(e.getSrc()).get(e.getDest())));
-            }
-            Node n= (Node) nodes.next();
-            Assertions.assertEquals(true, n.equals(nodemap.get(n.getKey())));
-            Assertions.assertEquals(true, n instanceof Node);
-        }
-        Assertions.assertEquals(node, g.nodeSize());
-        Assertions.assertEquals(edge, g.edgeSize());
-        Assertions.assertEquals(node+edge, g.getMC());
-    }
-    @Test
-    void Add_Node_Test(){
-        DWGraph g=this.Generate_Graph(20);
-        Node[] extra= this.Generate_Nodes(5,20);
-        for (int i = 0; i <5 ; i++) {
-            g.addNode(extra[i]);
-            Assertions.assertEquals(true, extra[i] instanceof Node);
-        }
-        Assertions.assertEquals(false, 20==g.nodeSize());
-    }
-    @Test
-    void Connect_Test(){
-        DWGraph g=this.Generate_Graph(20);
-        Edge[] extra=this.Generate_Edges(10);
-        int precount=g.edgeSize(), premc=g.getMC();
-        for (Edge e: extra) {
-            g.connect(e.getSrc(),e.getDest(),e.getWeight());
-            Assertions.assertEquals(true, e instanceof Edge);
-        }
-        Assertions.assertEquals(true, g.edgeSize()<=precount+10);
-        Assertions.assertEquals(true,premc+10==g.getMC());
-    }
-   // @Test
-    //void Remove_Node_Test() throws Exception {
-//        DWGraph g=this.Generate_Graph(100);
-//        Random rnd=new Random();
-//        int remove=rnd.nextInt(99-0)+0;
-//        Node removed= (Node) g.getNode(remove);
-//        try {
-//            int degree = g.EdgeFromNodeCount(remove) + g.EdgeToNodeCount(remove);
-//            int premc=g.getMC();
-//            int precount=g.edgeSize();
-//            g.removeNode(remove);
-//            Assertions.assertEquals(true, precount-degree==g.edgeSize());
-//            Assertions.assertEquals(true, premc+degree+1==g.getMC());
-//            Assertions.assertThrows(Exception.class, ()-> {g.EdgeFromNodeCount(remove);});
-//        }
-//        catch (Exception e){
-//            System.out.println("There is no such node in the graph");
-//        }
-    //}
-
-    @Test
-    void Remove_Edge_Test(){
-        DWGraph g=this.Generate_Graph(15);
-        int pre=g.edgeSize();
-        if(g.getEdge(0,3)==null){
-            pre++;
-        }
-        g.connect(0,3,1.5);
-        Assertions.assertEquals(pre, g.edgeSize());
-        g.connect(0,3,2.6);
-        Assertions.assertEquals(pre, g.edgeSize());
-        g.removeEdge(0,3);
-        Assertions.assertEquals(pre-1,g.edgeSize());
+    void init_Test() {
+        DWGraphAlgorithms ga=new DWGraphAlgorithms();
+        DWGraph g=this.Generate_Graph(500);
+        ga.init(g);
+        Assertions.assertEquals(true,ga.getGraph().equals(g));
     }
 
     @Test
-    void Equals_Test(){
-        DWGraph g=this.Generate_Graph(30);
-        DWGraph gcopy= new DWGraph(g);
-        DWGraph other=this.Generate_Graph(32);
-        Assertions.assertEquals(true, g.equals(gcopy));
-        Assertions.assertEquals(false, g.equals(other));
+    void getGraph_Test() {
+
     }
 
     @Test
-    void HashCode_Test(){
-        DWGraph[] graphs= new DWGraph[5];
-        for (int i = 0; i < 5; i++) {
-            graphs[i]=this.Generate_Graph(30);
-            int hashed=Objects.hash(graphs[i].getNodes(),graphs[i].getEdges(),graphs[i].nodeSize(),graphs[i].edgeSize(),graphs[i].getMC());
-            Assertions.assertEquals(hashed, graphs[i].hashCode());
-        }
+    void copy() {
     }
 
     @Test
-    void Iter_Test(){
-        DWGraph g=this.Generate_Graph(20);
-        g.connect(1,2,11);
-        Iterator<EdgeData> edges= g.edgeIter();
-        try {
-            g.connect(1,2,11);
-            edges.hasNext();
-        }
-        catch (RuntimeException e){
-            Assertions.assertTrue(true);
-            System.out.println("The exception was thrown as wanted");
-        }
-        try{
-            edges.remove();
-            edges.next();
-        }
-        catch (RuntimeException e){
-            System.out.println("The exception was thrown unlike we expected");
-        }
+    void isConnected() {
+        DWGraphAlgorithms ga=new DWGraphAlgorithms();
+        DWGraph g=this.Generate_Graph(10000);
+        ga.init(g);
+        System.out.println(ga.isConnected());
+        System.out.println("Happy Function");
+    }
 
+    @Test
+    void shortestPathDist() {
+    }
+
+    @Test
+    void shortestPath() {
+    }
+
+    @Test
+    void center() {
+    }
+
+    @Test
+    void tsp() {
+    }
+
+    @Test
+    void save() {
+    }
+
+    @Test
+    void load() {
+    }
+
+    @Test
+    void DFS() {
+    }
+
+    @Test
+    void testDFS() {
     }
 }
