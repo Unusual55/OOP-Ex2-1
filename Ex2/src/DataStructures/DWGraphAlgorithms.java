@@ -15,6 +15,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     
     DirectedWeightedGraph graph;
+    private ChangeTracker<HashMap<Integer, Integer>> connectedComponentsTracker = new ChangeTracker<>();
     
     public DWGraphAlgorithms() {
         this.graph = new DWGraph();
@@ -119,6 +120,11 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     }
     
     private HashMap<Integer, Integer> stronglyConnectedComponents() {
+        
+        if (!this.connectedComponentsTracker.wasChanged(this.graph.getMC())) {
+            return this.connectedComponentsTracker.getData();
+        }
+        
         HashMap<Integer, IsConnectedProps> props = new HashMap<>();
         HashMap<Integer, Integer> components = new HashMap<>();
         int index = 0;
@@ -139,6 +145,9 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 this.isConnected(v, globals, props, stack, components);
             }
         }
+        
+        this.connectedComponentsTracker.setData(components, this.graph.getMC());
+        
         return components;
     }
     
