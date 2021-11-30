@@ -15,7 +15,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     
     DirectedWeightedGraph graph;
-    private ChangeTracker<HashMap<Integer, Integer>> connectedComponentsTracker = new ChangeTracker<>();
+    private final ChangeTracker<HashMap<Integer, Integer>> connectedComponentsTracker = new ChangeTracker<>();
     
     public DWGraphAlgorithms() {
         this.graph = new DWGraph();
