@@ -189,7 +189,6 @@ public class DWGraph implements DirectedWeightedGraph {
                     return true;
                 }
                 return true;
-//                return it.hasNext() && (edge != null || edge.hasNext());
             }
 
             @Override

@@ -208,7 +208,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      * @param s the source vertex
      * @return The distance of the longest path
      */
-    public double LongestPath(Node s){
+    public double LongestPath(NodeData s){
         int unvisitedcouter= graph.nodeSize();
         DWGraph g= (DWGraph) this.copy();
         HashMap<Integer, Double> distance=new HashMap<>();
