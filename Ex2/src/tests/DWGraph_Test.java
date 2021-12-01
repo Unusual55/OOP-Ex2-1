@@ -299,7 +299,7 @@ public class DWGraph_Test {
     }
 
     @Test
-    void Iter_Test(){
+    void EdgeIter1_Test(){
         DWGraph g=this.Generate_Graph(20);
         g.connect(1,2,11);
         Iterator<EdgeData> edges= g.edgeIter();
@@ -318,6 +318,32 @@ public class DWGraph_Test {
         catch (RuntimeException e){
             System.out.println("The exception was thrown unlike we expected");
         }
+        String s = edges.next().toString();
+        edges.forEachRemaining(System.out::println);
+    }
 
+    @Test
+    void EdgeIter2_Test(){
+        DWGraph g=this.Generate_Graph(20);
+        g.connect(1,2,11);
+        Iterator<EdgeData> edges= g.edgeIter(1);
+//        try {
+//            g.connect(1,2,121);
+//            edges.hasNext();
+//        }
+//        catch (RuntimeException e){
+//            Assertions.assertTrue(true);
+//            System.out.println("The exception was thrown as wanted");
+//        }
+        try{
+            edges.next();
+            edges.remove();
+            edges.next();
+        }
+        catch (RuntimeException e){
+            System.out.println("The exception was thrown like we expected");
+        }
+        String s = edges.next().toString();
+        edges.forEachRemaining(System.out::println);
     }
 }

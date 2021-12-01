@@ -3,7 +3,10 @@ package DataStructures;
 import api.GeoLocation;
 
 import java.util.Objects;
-
+/**
+ * This class represent a coordinates as location in 3D space
+ * It has 3 fields: x,y,z which represent component in coordinate vector (x,y,z)
+ */
 public class Point3D implements GeoLocation {
     private double x, y, z;
     
@@ -28,44 +31,82 @@ public class Point3D implements GeoLocation {
     public Point3D(GeoLocation other) {
         this(other.x(), other.y(), other.z());
     }
-    
+
+    /**
+     * This function returns the value of the x property
+     * @return the value of the x property
+     */
     @Override
     public double x() {
         return this.x;
     }
-    
+
+    /**
+     * This function returns the value of the y property
+     * @return the value of the y property
+     */
     @Override
     public double y() {
         return this.y;
     }
-    
+
+    /**
+     * This function returns the value of the z property
+     * @return the value of the z property
+     */
     @Override
     public double z() {
         return this.z;
     }
-    
+
+    /**
+     * This function set the value of the x property of this point object
+     * @param x the new value of x
+     */
     public void setX(double x) {
         this.x = x;
     }
-    
+
+    /**
+     * This function set the value of y property of this object
+     * @param y the new value of y
+     */
     public void setY(double y) {
         this.y = y;
     }
-    
+
+    /**
+     * This function set the value of z property of this object
+     * @param z thr new value of z
+     */
     public void setZ(double z) {
         this.z = z;
     }
-    
+
+    /**
+     * This function calculates the distance between two 3D points
+     * @param other the 3D point we would like to calculate the distance from.
+     * @return The distance between the two points
+     */
     @Override
     public double distance(GeoLocation other) {
         return Math.sqrt(Math.pow(this.x - other.x(), 2) + Math.pow(this.y - other.y(), 2) + Math.pow(this.z - other.z(), 2));
     }
-    
+
+    /**
+     * This function return a string which represent this 3D point
+     * @return String that represent this 3D point
+     */
     @Override
     public String toString() {
         return "" + this.x + ", " + this.y + ", " + this.z;
     }
-    
+
+    /**
+     * This function get another Point3D Object and check if their properties are equal.
+     * @param other the object we compare this object to
+     * @return True if they are equal, otherwise false
+     */
     @Override
     public boolean equals(Object other) {
         if (other == this) return true;
