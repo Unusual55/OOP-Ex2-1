@@ -182,7 +182,14 @@ public class DWGraph implements DirectedWeightedGraph {
             public boolean hasNext() {
                 if (modeCount != startModeCounter)
                     throw new RuntimeException("Graph was changed since iterator was constructed");
-                return it.hasNext() && (edge != null || edge.hasNext());
+                if(edge==null&&!it.hasNext()){
+                    return false;
+                }
+                else if(edge==null&&it.hasNext()){
+                    return true;
+                }
+                return true;
+//                return it.hasNext() && (edge != null || edge.hasNext());
             }
 
             @Override
@@ -235,11 +242,25 @@ public class DWGraph implements DirectedWeightedGraph {
                 return it.hasNext();
             }
 
+//            @Override
+//            public EdgeData next() {
+//                if (modeCount != startModeCounter)
+//                    throw new RuntimeException("Graph was changed since iterator was constructed");
+//                if(this.hasNext()) {
+//                    e = (Edge) it.next();
+//                }
+//                return null;
+//            }
             @Override
             public EdgeData next() {
                 if (modeCount != startModeCounter)
                     throw new RuntimeException("Graph was changed since iterator was constructed");
-                e= (Edge) it.next();
+                if(it.hasNext()){
+                    e= (Edge) it.next();
+                }
+                else{
+                    return null;
+                }
                 return e;
             }
 

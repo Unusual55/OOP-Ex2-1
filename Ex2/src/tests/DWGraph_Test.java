@@ -1,7 +1,6 @@
 package tests;
 import DataStructures.*;
 import api.*;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -26,30 +25,30 @@ public class DWGraph_Test {
             Node n = new Node(i, p, 0, "", -1);
             g.addNode(n);
         }
-        int maxdeg=20;
-        int[] edgecount=new int[g.nodeSize()];
+        int maxdeg = 20;
+        int[] edgecount = new int[g.nodeSize()];
         for (int i = 0; i < g.nodeSize(); i++) {
-            int remain=maxdeg-edgecount[i];
-            if(remain<=0){
+            int remain = maxdeg - edgecount[i];
+            if (remain <= 0) {
                 continue;
             }
-            int out= rnd.nextInt(remain);
-            int in=remain-out;
-            while(out>0||in>0){
-                if(out>0){
-                    int dest=rnd.nextInt(len-0)+0;
-                    if(dest!=i&&g.getEdge(i,dest)==null){
+            int out = rnd.nextInt(remain);
+            int in = remain - out;
+            while (out > 0 || in > 0) {
+                if (out > 0) {
+                    int dest = rnd.nextInt(len - 0) + 0;
+                    if (dest != i && g.getEdge(i, dest) == null) {
                         out--;
                         double w = g.getNode(i).getLocation().distance(g.getNode(dest).getLocation());
-                        g.connect(i,dest,w);
+                        g.connect(i, dest, w);
                         edgecount[i]++;
                         edgecount[dest]++;
                     }
                     continue;
                 }
-                if(in>0){
-                    int src=rnd.nextInt(len-0)+0;
-                    if(src!=i&&g.getEdge(src, i)==null){
+                if (in > 0) {
+                    int src = rnd.nextInt(len - 0) + 0;
+                    if (src != i && g.getEdge(src, i) == null) {
                         in--;
                         double w = g.getNode(i).getLocation().distance(g.getNode(src).getLocation());
                         g.connect(src, i, w);
@@ -62,6 +61,7 @@ public class DWGraph_Test {
         }
         return g;
     }
+
     DWGraph Generate_Graph(int count) {
         Random rnd = new Random();
         double minV = 0, maxV = 1000.0;
@@ -76,44 +76,42 @@ public class DWGraph_Test {
             Node n = new Node(i, p, 0, "", -1);
             g.addNode(n);
         }
-        int maxdeg=20;
-        int[] edgecount=new int[g.nodeSize()];
+        int maxdeg = 20;
+        int[] edgecount = new int[g.nodeSize()];
         for (int i = 0; i < g.nodeSize(); i++) {
-            int remain=maxdeg-edgecount[i];
-            if(remain<=0){
+            int remain = maxdeg - edgecount[i];
+            if (remain <= 0) {
                 continue;
             }
-            int out= rnd.nextInt(remain);
-            int in=remain-out;
-            int tries=0;
-            while(out>0||in>0){
-                if(tries>=0.5*g.nodeSize()){
+            int out = rnd.nextInt(remain);
+            int in = remain - out;
+            int tries = 0;
+            while (out > 0 || in > 0) {
+                if (tries >= 0.5 * g.nodeSize()) {
                     break;
                 }
-                if(out>0){
-                    int dest=rnd.nextInt(len-0)+0;
-                    if(dest!=i&&g.getEdge(i,dest)==null){
+                if (out > 0) {
+                    int dest = rnd.nextInt(len - 0) + 0;
+                    if (dest != i && g.getEdge(i, dest) == null) {
                         out--;
                         double w = g.getNode(i).getLocation().distance(g.getNode(dest).getLocation());
-                        g.connect(i,dest,w);
+                        g.connect(i, dest, w);
                         edgecount[i]++;
                         edgecount[dest]++;
-                    }
-                    else {
+                    } else {
                         tries++;
                     }
                     continue;
                 }
-                if(in>0){
-                    int src=rnd.nextInt(len-0)+0;
-                    if(src!=i&&g.getEdge(src, i)==null){
+                if (in > 0) {
+                    int src = rnd.nextInt(len - 0) + 0;
+                    if (src != i && g.getEdge(src, i) == null) {
                         in--;
                         double w = g.getNode(i).getLocation().distance(g.getNode(src).getLocation());
                         g.connect(src, i, w);
                         edgecount[i]++;
                         edgecount[src]++;
-                    }
-                    else{
+                    } else {
                         tries++;
                     }
                     continue;
@@ -122,129 +120,136 @@ public class DWGraph_Test {
         }
         return g;
     }
-    Node[] Generate_Nodes(){
+
+    Node[] Generate_Nodes() {
         Node[] nodes;
-        Random rnd= new Random();
-        int minC =10, maxC=100;
-        double minV=0, maxV=100.0;
-        int len= rnd.nextInt(maxC-minC)+minC;
-        nodes=new Node[len];
+        Random rnd = new Random();
+        int minC = 10, maxC = 100;
+        double minV = 0, maxV = 100.0;
+        int len = rnd.nextInt(maxC - minC) + minC;
+        nodes = new Node[len];
         for (int i = 0; i < len; i++) {
-            double x=rnd.nextDouble()*len;
-            double y=rnd.nextDouble()*len;
-            double z=rnd.nextDouble()*len;
-            int id=i;
-            Point3D p=new Point3D(x,y,z);
-            nodes[i]=new Node(i,p,0,"",1);
+            double x = rnd.nextDouble() * len;
+            double y = rnd.nextDouble() * len;
+            double z = rnd.nextDouble() * len;
+            int id = i;
+            Point3D p = new Point3D(x, y, z);
+            nodes[i] = new Node(i, p, 0, "", 1);
         }
         return nodes;
     }
-    Node[] Generate_Nodes(int count, int startfrom){
-        Node[] nodes;
-        Random rnd= new Random();
-        double minV=0, maxV=100.0;
-        int len= count;
-        nodes=new Node[len];
+
+    Node[] Generate_Nodes(int count, int startfrom) {
+        Random rnd = new Random();
+        double minV = 0, maxV = 100.0;
+        int len = count;
+        Node[] nodes = new Node[len];
         for (int i = 0; i < count; i++) {
-            double x=rnd.nextDouble()*len;
-            double y=rnd.nextDouble()*len;
-            double z=rnd.nextDouble()*len;
-            int id=i;
-            Point3D p=new Point3D(x,y,z);
-            nodes[i]=new Node(startfrom+1, p,0,"",1);
+            double x = rnd.nextDouble() * len;
+            double y = rnd.nextDouble() * len;
+            double z = rnd.nextDouble() * len;
+            int id = i;
+            Point3D p = new Point3D(x, y, z);
+            nodes[i] = new Node(startfrom + i, p, 0, "", 1);
         }
         return nodes;
     }
-    Edge[] Generate_Edges(){
+
+    Edge[] Generate_Edges() {
         Edge[] edges;
-        Random rnd= new Random();
-        int minC =10, maxC=100;
-        double minV=0, maxV=100.0;
-        int len= rnd.nextInt(maxC-minC)+minC;
-        edges=new Edge[len];
+        Random rnd = new Random();
+        int minC = 10, maxC = 100;
+        double minV = 0, maxV = 100.0;
+        int len = rnd.nextInt(maxC - minC) + minC;
+        edges = new Edge[len];
         for (int i = 0; i < len; i++) {
-            int src= rnd.nextInt(len-1-0)+0;
-            int dest=src;
-            while(dest==src){
-                dest=rnd.nextInt(len-1-0)+0;
+            int src = rnd.nextInt(len - 1 - 0) + 0;
+            int dest = src;
+            while (dest == src) {
+                dest = rnd.nextInt(len - 1 - 0) + 0;
             }
-            double weight=rnd.nextDouble()*len;
-            edges[i]=new Edge(src,dest,weight);
+            double weight = rnd.nextDouble() * len;
+            edges[i] = new Edge(src, dest, weight);
         }
         return edges;
     }
-    Edge[] Generate_Edges(int count){
+
+    Edge[] Generate_Edges(int count) {
         Edge[] edges;
-        Random rnd= new Random();
-        int minC =10, maxC=100;
-        double minV=0, maxV=100.0;
-        int len= count;
-        edges=new Edge[len];
+        Random rnd = new Random();
+        int minC = 10, maxC = 100;
+        double minV = 0, maxV = 100.0;
+        int len = count;
+        edges = new Edge[len];
         for (int i = 0; i < len; i++) {
-            int src= rnd.nextInt(len-1-0)+0;
-            int dest=src;
-            while(dest==src){
-                dest=rnd.nextInt(len-1-0)+0;
+            int src = rnd.nextInt(len - 1 - 0) + 0;
+            int dest = src;
+            while (dest == src) {
+                dest = rnd.nextInt(len - 1 - 0) + 0;
             }
-            double weight=rnd.nextDouble()*len;
-            edges[i]=new Edge(src,dest,weight);
+            double weight = rnd.nextDouble() * len;
+            edges[i] = new Edge(src, dest, weight);
         }
         return edges;
     }
+
     @Test
-    void Constructors_Test(){
-        DWGraph g= this.Generate_Graph();
-        DWGraph gcopy=new DWGraph(g);
+    void Constructors_Test() {
+        DWGraph g = this.Generate_Graph();
+        DWGraph gcopy = new DWGraph(g);
         Assertions.assertEquals(true, g instanceof DWGraph);
         Assertions.assertEquals(true, gcopy instanceof DWGraph);
     }
+
     @Test
-    void Getters_Test(){
-        DWGraph g=this.Generate_Graph(1000000);
-        HashMap<Integer, NodeData> nodemap= g.getNodes();
-        HashMap<Integer, HashMap<Integer, EdgeData>> edgemap=g.getEdges();
-        Iterator<NodeData> nodes=g.nodeIter();
-        int node=0, edge=0;
-        while(nodes.hasNext()){
+    void Getters_Test() {
+        DWGraph g = this.Generate_Graph(1000000);
+        HashMap<Integer, NodeData> nodemap = g.getNodes();
+        HashMap<Integer, HashMap<Integer, EdgeData>> edgemap = g.getEdges();
+        Iterator<NodeData> nodes = g.nodeIter();
+        int node = 0, edge = 0;
+        while (nodes.hasNext()) {
             node++;
-            Iterator<EdgeData> edges=g.edgeIter(node-1);
-            while(edges.hasNext()){
+            Iterator<EdgeData> edges = g.edgeIter(node - 1);
+            while (edges.hasNext()) {
                 edge++;
-                Edge e=(Edge) edges.next();
+                Edge e = (Edge) edges.next();
                 Assertions.assertEquals(true, e instanceof Edge);
                 Assertions.assertEquals(true, e.equals(edgemap.get(e.getSrc()).get(e.getDest())));
             }
-            Node n= (Node) nodes.next();
+            Node n = (Node) nodes.next();
             Assertions.assertEquals(true, n.equals(nodemap.get(n.getKey())));
             Assertions.assertEquals(true, n instanceof Node);
         }
         Assertions.assertEquals(node, g.nodeSize());
         Assertions.assertEquals(edge, g.edgeSize());
-        Assertions.assertEquals(node+edge, g.getMC());
+        Assertions.assertEquals(node + edge, g.getMC());
     }
+
     @Test
-    void Add_Node_Test(){
-        DWGraph g=this.Generate_Graph(20);
-        Node[] extra= this.Generate_Nodes(5,20);
-        for (int i = 0; i <5 ; i++) {
+    void Add_Node_Test() {
+        DWGraph g = this.Generate_Graph(20);
+        Node[] extra = this.Generate_Nodes(5, 20);
+        for (int i = 0; i < 5; i++) {
             g.addNode(extra[i]);
             Assertions.assertEquals(true, extra[i] instanceof Node);
         }
-        Assertions.assertEquals(false, 20==g.nodeSize());
+        Assertions.assertEquals(false, 20 == g.nodeSize());
     }
+
     @Test
-    void Connect_Test(){
-        DWGraph g=this.Generate_Graph(20);
-        Edge[] extra=this.Generate_Edges(10);
-        int precount=g.edgeSize(), premc=g.getMC();
-        for (Edge e: extra) {
-            g.connect(e.getSrc(),e.getDest(),e.getWeight());
+    void Connect_Test() {
+        DWGraph g = this.Generate_Graph(20);
+        Edge[] extra = this.Generate_Edges(10);
+        int precount = g.edgeSize(), premc = g.getMC();
+        for (Edge e : extra) {
+            g.connect(e.getSrc(), e.getDest(), e.getWeight());
             Assertions.assertEquals(true, e instanceof Edge);
         }
-        Assertions.assertEquals(true, g.edgeSize()<=precount+10);
-        Assertions.assertEquals(true,premc+10==g.getMC());
+        Assertions.assertEquals(true, g.edgeSize() <= precount + 10);
+        Assertions.assertEquals(true, premc + 10 == g.getMC());
     }
-   // @Test
+    // @Test
     //void Remove_Node_Test() throws Exception {
 //        DWGraph g=this.Generate_Graph(100);
 //        Random rnd=new Random();
@@ -265,85 +270,202 @@ public class DWGraph_Test {
     //}
 
     @Test
-    void Remove_Edge_Test(){
-        DWGraph g=this.Generate_Graph(15);
-        int pre=g.edgeSize();
-        if(g.getEdge(0,3)==null){
+    void Remove_Edge_Test() {
+        DWGraph g = this.Generate_Graph(15);
+        int pre = g.edgeSize();
+        if (g.getEdge(0, 3) == null) {
             pre++;
         }
-        g.connect(0,3,1.5);
+        g.connect(0, 3, 1.5);
         Assertions.assertEquals(pre, g.edgeSize());
-        g.connect(0,3,2.6);
+        g.connect(0, 3, 2.6);
         Assertions.assertEquals(pre, g.edgeSize());
-        g.removeEdge(0,3);
-        Assertions.assertEquals(pre-1,g.edgeSize());
+        g.removeEdge(0, 3);
+        Assertions.assertEquals(pre - 1, g.edgeSize());
     }
 
     @Test
-    void Equals_Test(){
-        DWGraph g=this.Generate_Graph(30);
-        DWGraph gcopy= new DWGraph(g);
-        DWGraph other=this.Generate_Graph(32);
+    void Equals_Test() {
+        DWGraph g = this.Generate_Graph(30);
+        DWGraph gcopy = new DWGraph(g);
+        DWGraph other = this.Generate_Graph(32);
         Assertions.assertEquals(true, g.equals(gcopy));
         Assertions.assertEquals(false, g.equals(other));
     }
 
     @Test
-    void HashCode_Test(){
-        DWGraph[] graphs= new DWGraph[5];
+    void HashCode_Test() {
+        DWGraph[] graphs = new DWGraph[5];
         for (int i = 0; i < 5; i++) {
-            graphs[i]=this.Generate_Graph(30);
-            int hashed=Objects.hash(graphs[i].getNodes(),graphs[i].getEdges(),graphs[i].nodeSize(),graphs[i].edgeSize(),graphs[i].getMC());
+            graphs[i] = this.Generate_Graph(30);
+            int hashed = Objects.hash(graphs[i].getNodes(), graphs[i].getEdges(), graphs[i].nodeSize(), graphs[i].edgeSize(), graphs[i].getMC());
             Assertions.assertEquals(hashed, graphs[i].hashCode());
         }
     }
 
     @Test
-    void EdgeIter1_Test(){
-        DWGraph g=this.Generate_Graph(20);
-        g.connect(1,2,11);
-        Iterator<EdgeData> edges= g.edgeIter();
+    void EdgeIter1_HasNext_Test() {
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1, 2, 11);
+        Iterator<EdgeData> edges = g.edgeIter();
         try {
-            g.connect(1,2,11);
+            g.connect(1, 2, 112);
+            edges.hasNext();
+        } catch (RuntimeException e) {
+            Assertions.assertTrue(true);
+            System.out.println("The exception was thrown as wanted");
+        }
+    }
+
+    @Test
+    void EdgeIter1_Next_Test() {
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1, 2, 11);
+        Iterator<EdgeData> edges = g.edgeIter();
+        try {
+            g.connect(1, 2, 11);
+            edges.next();
+        } catch (RuntimeException e) {
+            Assertions.assertTrue(true);
+            System.out.println("The exception was thrown as wanted");
+        }
+    }
+
+    @Test
+    void EdgeIter1_Remove_Test1() {
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1, 2, 11);
+        Iterator<EdgeData> edges = g.edgeIter();
+        try {
+            g.removeEdge(1, 2);
+            edges.hasNext();
+        } catch (RuntimeException e) {
+            Assertions.assertTrue(true);
+            System.out.println("The exception was thrown as wanted");
+        }
+    }
+    @Test
+    void EdgeIter1_Remove_Test2() {
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1, 2, 11);
+        Iterator<EdgeData> edges = g.edgeIter();
+        try {
+            edges.remove();
+            edges.hasNext();
+        } catch (RuntimeException e) {
+            Assertions.assertTrue(true);
+            System.out.println("The exception was thrown unlike we expected");
+        }
+    }
+
+    @Test
+    void EdgeIter2_HasNext_Test() {
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1,2,11);
+        Iterator<EdgeData> edges = g.edgeIter(1);
+        try {
+            g.connect(1,2,121);
             edges.hasNext();
         }
         catch (RuntimeException e){
             Assertions.assertTrue(true);
             System.out.println("The exception was thrown as wanted");
         }
-        try{
-            edges.remove();
-            edges.next();
-        }
-        catch (RuntimeException e){
-            System.out.println("The exception was thrown unlike we expected");
-        }
-        String s = edges.next().toString();
-        edges.forEachRemaining(System.out::println);
     }
 
     @Test
-    void EdgeIter2_Test(){
-        DWGraph g=this.Generate_Graph(20);
+    void EdgeIter2_Next_Test(){
+        DWGraph g = this.Generate_Graph(20);
         g.connect(1,2,11);
-        Iterator<EdgeData> edges= g.edgeIter(1);
-//        try {
-//            g.connect(1,2,121);
-//            edges.hasNext();
-//        }
-//        catch (RuntimeException e){
-//            Assertions.assertTrue(true);
-//            System.out.println("The exception was thrown as wanted");
-//        }
+        Iterator<EdgeData> edges = g.edgeIter(1);
         try{
-            edges.next();
-            edges.remove();
+            g.removeEdge(1,2);
             edges.next();
         }
         catch (RuntimeException e){
-            System.out.println("The exception was thrown like we expected");
+            System.out.println("The exception was thrown as wanted");
         }
-        String s = edges.next().toString();
-        edges.forEachRemaining(System.out::println);
+    }
+
+    @Test
+    void EdgeIter2_Remove_Test1(){
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1,2,11);
+        Iterator<EdgeData> edges = g.edgeIter(1);
+        try {
+            g.connect(1,2,121);
+            edges.remove();
+        }
+        catch (RuntimeException e){
+            Assertions.assertTrue(true);
+            System.out.println("The exception was thrown as wanted");
+        }
+    }
+
+    @Test
+    void EdgeIter2_Remove_Test2(){
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1,2,11);
+        Iterator<EdgeData> edges = g.edgeIter(1);
+        try {
+            edges.remove();
+            edges.hasNext();
+        }
+        catch (RuntimeException e){
+            Assertions.assertTrue(true);
+            System.out.println("The exception was thrown unlike we wanted");
+        }
+    }
+
+    @Test
+    void NodeIter_HasNext_Test() {
+        DWGraph g = this.Generate_Graph(20);
+        Node n = this.Generate_Nodes(1, 20)[0];
+        Iterator<NodeData> nodes = g.nodeIter();
+        try {
+            g.addNode(n);
+            nodes.hasNext();
+        } catch (RuntimeException e) {
+            System.out.println("The Exception was thrown as we wanted");
+        }
+    }
+
+    @Test
+    void NodeIter_Next_Test() {
+        DWGraph g = this.Generate_Graph(20);
+        Node n = this.Generate_Nodes(1, 20)[0];
+        Iterator<NodeData> nodes = g.nodeIter();
+        try {
+            g.addNode(n);
+            Node next = (Node) nodes.next();
+        } catch (RuntimeException e) {
+            System.out.println("The Exception was thrown as we wanted");
+        }
+    }
+
+    @Test
+    void NodeIter_Remove_Test() {
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1, 15, 12);
+        Iterator<NodeData> nodes = g.nodeIter();
+        try {
+            nodes.remove();
+            nodes.hasNext();
+        } catch (RuntimeException e) {
+            System.out.println("The exception was thrown unlike we expected");
+        }
+    }
+
+    @Test
+    void NodeIter_Remove_Test2() {
+        DWGraph g = this.Generate_Graph(20);
+        g.connect(1, 15, 12);
+        Iterator<NodeData> nodes = g.nodeIter();
+        try {
+            g.removeNode(1);
+            nodes.next();
+        } catch (RuntimeException e) {
+            System.out.println("The exception was thrown as we expected");
+        }
     }
 }
