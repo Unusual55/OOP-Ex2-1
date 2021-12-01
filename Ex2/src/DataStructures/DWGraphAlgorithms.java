@@ -5,10 +5,7 @@ import api.DirectedWeightedGraphAlgorithms;
 import api.EdgeData;
 import api.NodeData;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
@@ -187,9 +184,66 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public NodeData center() {
-        return null;
+        if(!isConnected()){
+            return null;
+        }
+        int minid=-1;
+        double mindistance=Double.MAX_VALUE;
+        Iterator<NodeData> nodes=graph.nodeIter();
+        while(nodes.hasNext()){
+            Node n= (Node) nodes.next();
+            int id=n.getKey();
+            double longest=this.LongestPath(n);
+            if(mindistance>longest){
+                mindistance=longest;
+                minid=id;
+            }
+        }
+        return graph.getNode(minid);
     }
-    
+
+    /**
+     * This function Calculate the distance of the longest path that start from a node to any
+     * other vertex in the graph
+     * @param s the source vertex
+     * @return The distance of the longest path
+     */
+    public double LongestPath(Node s){
+        int unvisitedcouter= graph.nodeSize();
+        DWGraph g= (DWGraph) this.copy();
+        HashMap<Integer, Double> distance=new HashMap<>();
+        int maxid=-1;
+        while(unvisitedcouter>0){
+            Iterator<EdgeData> Adj=g.edgeIter(s.getKey());
+            int nextid=-1;
+            while(Adj.hasNext()){
+                Edge e= (Edge) Adj.next();
+                Node n= (Node) g.getNode(e.getDest());
+                int id=e.getDest();
+                if(maxid==-1){
+                    maxid=id;
+                }
+                if(!distance.containsKey(id)){
+                    distance.put(id,0.0);
+                }
+                if(n.getTag()==1){
+                    continue;
+                }
+                n.setTag(0);
+                if(distance.get(id)<distance.get(s.getKey())+e.getWeight()){
+                    distance.replace(id,distance.get(id),distance.get(s.getKey())+e.getWeight());
+                    nextid=id;
+                    if(distance.get(maxid)<distance.get(id)){
+                        maxid=id;
+                    }
+                }
+            }
+            s.setTag(1);
+            unvisitedcouter--;
+            s= (Node) g.getNode(nextid);
+        }
+        return distance.get(maxid);
+    }
     /**
      * Computes a list of consecutive nodes which go over all the nodes in cities.
      * the sum of the weights of all the consecutive (pairs) of nodes (directed) is the "cost" of the solution -
