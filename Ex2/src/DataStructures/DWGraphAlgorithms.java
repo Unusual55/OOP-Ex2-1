@@ -147,7 +147,72 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         
         return components;
     }
-    
+
+    /**
+     * This fuction return a transposed graph from the current graph using iterators
+     * @return Transposed Graph
+     */
+    private DirectedWeightedGraph GraphTranspose(){
+        DirectedWeightedGraph g=new DWGraph();
+        Iterator<NodeData> nodeiter=this.graph.nodeIter();
+        while(nodeiter.hasNext()){
+            g.addNode(nodeiter.next());
+        }
+        Iterator<EdgeData> edgeiter=this.graph.edgeIter();
+        while(edgeiter.hasNext()){
+            EdgeData e=edgeiter.next();
+            g.connect(e.getDest(), e.getSrc(), e.getWeight());
+        }
+        return g;
+    }
+
+    /**
+     * This function calculate the shortest path to every node that start from src node and return the index
+     * @param distance Empty HashMap that will contain the distances
+     * @param src The source node id
+     */
+    private void Dijkstra(HashMap<Integer, Double> distance, int src){
+        int minid=-1, unvisited=this.graph.nodeSize();
+        double mindist=Double.MAX_VALUE;
+        NodeData curr=this.graph.getNode(src);
+        distance.put(src, 0.0);
+        while (unvisited>0){
+            Iterator<EdgeData> adj=this.graph.edgeIter();
+            int nextid=-1;
+            while(adj.hasNext()){
+                EdgeData e= adj.next();
+                NodeData neighbor= this.graph.getNode(e.getDest());
+                if(neighbor.getTag()==1){
+                    continue;
+                }
+                int id=neighbor.getKey();
+                neighbor.setTag(0);
+                if(minid==-1){
+                    minid=id;
+                }
+                if(nextid==-1){
+                    nextid=id;
+                }
+                if(!distance.containsKey(id)){
+                    distance.put(id, Double.MAX_VALUE);
+                }
+                if(distance.get(id)>distance.get(src)+e.getWeight()){
+                    distance.replace(id, distance.get(id), distance.get(src)+e.getWeight());
+                    if(distance.get(nextid)>distance.get(id)){
+                        nextid=id;
+                    }
+                }
+            }
+            if(distance.get(minid)>distance.get(nextid)){
+                minid=nextid;
+                mindist=distance.get(minid);
+            }
+            unvisited--;
+            curr.setTag(1);
+            curr=this.graph.getNode(nextid);
+        }
+    }
+
     /**
      * Computes the length of the shortest path between src to dest
      * Note: if no such path --> returns -1
@@ -158,7 +223,9 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        HashMap<Integer, Double> dist=new HashMap<>();
+        this.Dijkstra(dist, src);
+        return dist.get(dest);
     }
     
     /**
@@ -173,7 +240,32 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        return null;
+        HashMap<Integer, Double> dist=new HashMap<>();
+        this.Dijkstra(dist, src);
+        DirectedWeightedGraph transposed=this.GraphTranspose();
+        int curr=dest;
+        Stack<NodeData> path=new Stack<NodeData>();
+        while(curr!=src){
+            int nextid=-1;
+            Iterator<EdgeData> edgeiter=transposed.edgeIter(curr);
+            while(edgeiter.hasNext()){
+                EdgeData e=edgeiter.next();
+                if(nextid==-1){
+                    nextid=e.getSrc();
+                }
+                if(dist.get(e.getSrc())+e.getWeight()==dist.get(curr)){
+                    nextid=transposed.getNode(e.getSrc()).getKey();
+                    break;
+                }
+            }
+            path.push(this.graph.getNode(curr));
+            curr=nextid;
+        }
+        List<NodeData> ret=new LinkedList<NodeData>();
+        for (NodeData n:path) {
+            ret.add(0,n);
+        }
+        return ret;
     }
     
     /**
@@ -208,7 +300,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      * @param s the source vertex
      * @return The distance of the longest path
      */
-    public double LongestPath(NodeData s){
+    private double LongestPath(NodeData s){
         int unvisitedcouter= graph.nodeSize();
         DWGraph g= (DWGraph) this.copy();
         HashMap<Integer, Double> distance=new HashMap<>();
@@ -242,7 +334,12 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
             unvisitedcouter--;
             s= (Node) g.getNode(nextid);
         }
-        return distance.get(maxid);
+//        return distance.get(maxid);
+        double ret=0;
+        for (double x: distance.keySet()) {
+            ret+=x;
+        }
+        return ret;
     }
     /**
      * Computes a list of consecutive nodes which go over all the nodes in cities.
