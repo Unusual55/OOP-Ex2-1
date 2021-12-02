@@ -4,7 +4,12 @@ import api.DirectedWeightedGraph;
 import api.DirectedWeightedGraphAlgorithms;
 import api.EdgeData;
 import api.NodeData;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -377,9 +382,80 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public boolean load(String file) {
-        return false;
+        JsonParser jsonparser = new JsonParser();
+        DirectedWeightedGraph g = new DWGraph();
+        try {
+            FileReader reader = new FileReader("./"+file);
+            Object obj = jsonparser.parse(reader);
+            JsonObject job =(JsonObject) obj;
+            JsonArray edges = job.get("Edges").getAsJsonArray();
+            JsonArray nodes = job.get("Nodes").getAsJsonArray();
+            ValidateJson(job);
+            for(int i=0;i<nodes.size();i++){
+                JsonObject node=nodes.get(i).getAsJsonObject();
+                String[] pos =node.get("pos").toString().split(",");
+                double x = Double.parseDouble(pos[0].substring(1));
+                double y = Double.parseDouble(pos[1].substring(1));
+                double z = Double.parseDouble(pos[2].substring(1,pos[2].length()-1));
+                int id =Integer.parseInt(node.get("id").toString());
+                Node n = new Node(id, new Point3D(x,y,z),0,"",-1);
+                g.addNode(n);
+            }
+            for(int i=0;i<edges.size();i++){
+                JsonObject edge = edges.get(i).getAsJsonObject();
+                int src=Integer.parseInt(edge.get("src").toString());
+                int dest=Integer.parseInt(edge.get("dest").toString());
+                double weight=Double.parseDouble(edge.get("w").toString());
+                g.connect(src, dest, weight);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            this.graph=g;
+            return true;
+        }
     }
-    
+    private void ValidateJson(JsonObject job){
+        if(job.size()!=2){
+            throw new IllegalArgumentException("The valid .json should contain 2 members");
+        }
+        if(!job.has("Nodes")||!job.has("Edges")){
+            throw new IllegalArgumentException("The valid .json members are supposed to be Edges and Nodes.");
+        }
+        JsonArray edges = job.get("Edges").getAsJsonArray();
+        JsonArray nodes = job.get("Nodes").getAsJsonArray();
+        for(int i=0;i<nodes.size();i++){
+            JsonObject node=nodes.get(i).getAsJsonObject();
+            String[] pos =node.get("pos").toString().split(",");
+            if(pos.length!=3){
+                throw new IllegalArgumentException("The valid position should contain 3 parameters");
+            }
+            try {
+                double x = Double.parseDouble(pos[0].substring(1));
+                double y = Double.parseDouble(pos[1].substring(1));
+                double z = Double.parseDouble(pos[2].substring(1, pos[2].length() - 1));
+                int id = Integer.parseInt(node.get("id").toString());
+                Node n = new Node(id,new Point3D(x,y,z),0,"",-1);
+            }
+            catch (IllegalArgumentException e){
+                throw new IllegalArgumentException("The input is invalid.");
+            }
+        }
+        for(int i=0;i<edges.size();i++){
+            JsonObject edge = edges.get(i).getAsJsonObject();
+            try {
+                int src = Integer.parseInt(edge.get("src").toString());
+                int dest = Integer.parseInt(edge.get("dest").toString());
+                double weight = Double.parseDouble(edge.get("w").toString());
+            }
+            catch (IllegalArgumentException e){
+                throw new IllegalArgumentException("The input is invalid.");
+            }
+        }
+    }
+
     // https://en.wikipedia.org/wiki/Graph_traversal#Depth-first_search
     // https://en.wikipedia.org/wiki/Depth-first_search
     public void DFS(NodeData v, Consumer<NodeData> func) {
