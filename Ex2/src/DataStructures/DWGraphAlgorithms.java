@@ -218,6 +218,20 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         }
     }
 
+//    private void Dijkstra(int src, int dest){
+//        HashMap<Integer, Double> dist=new HashMap<>();
+//        HashSet<Integer> visited=new HashSet<Integer>();
+//        Iterator<NodeData> nodes= graph.nodeIter();
+//        while(nodes.hasNext()){
+//            NodeData n=nodes.next();
+//            int key=n.getKey();
+//            visited.add(key);
+//            dist.put(key, Double.MAX_VALUE);
+//        }
+//        dist.replace(src, Double.MAX_VALUE, 0.0);
+//
+//    }
+
     /**
      * Computes the length of the shortest path between src to dest
      * Note: if no such path --> returns -1
@@ -295,9 +309,118 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 mindistance=longest;
                 minid=id;
             }
+            /**
+             * Right now we made few changes in the graph without change it through the iterator, which we can't do
+             * To fix the issue, the next line will reset the tags of the nodes to their default value -1, so the
+             * Node Iterator will be valid again
+             */
+            graph.nodeIter().forEachRemaining(nodeData -> nodeData.setTag(-1));
         }
         return graph.getNode(minid);
     }
+
+//    /**
+//     * This function is use dijkstra Algorithm with modification: we can't visit any vertex in without set.
+//     * @param distance Empty HashMap that will contain the distances from the other nodes
+//     * @param without Set of ids of nodes we don't want to visit.
+//     */
+//    private void ModifiedDijkstra(HashMap<Integer, Double> distance, HashSet<Integer> without, int src){
+//        int minid=-1, unvisited=this.graph.nodeSize()-without.size();
+//        double mindist=Double.MAX_VALUE;
+//        NodeData curr=this.graph.getNode(src);
+//        distance.put(src, 0.0);
+//        while (unvisited>0){
+//            Iterator<EdgeData> adj=this.graph.edgeIter();
+//            int nextid=-1;
+//            while(adj.hasNext()){
+//                EdgeData e= adj.next();
+//                NodeData neighbor= this.graph.getNode(e.getDest());
+//                if(neighbor.getTag()==1||without.contains(neighbor.getKey())){
+//                    continue;
+//                }
+//                int id=neighbor.getKey();
+//                neighbor.setTag(0);
+//                if(minid==-1){
+//                    minid=id;
+//                }
+//                if(nextid==-1){
+//                    nextid=id;
+//                }
+//                if(!distance.containsKey(id)){
+//                    distance.put(id, Double.MAX_VALUE);
+//                }
+//                if(distance.get(id)>distance.get(src)+e.getWeight()){
+//                    distance.replace(id, distance.get(id), distance.get(src)+e.getWeight());
+//                    if(distance.get(nextid)>distance.get(id)){
+//                        nextid=id;
+//                    }
+//                }
+//            }
+//            if(distance.get(minid)>distance.get(nextid)){
+//                minid=nextid;
+//                mindist=distance.get(minid);
+//            }
+//            unvisited--;
+//            curr.setTag(1);
+//            curr=this.graph.getNode(nextid);
+//        }
+//    }
+//
+//    private List<NodeData> ShorterPath(HashMap<Integer, Double> dist, int dest, int src) {
+//        DirectedWeightedGraph transposed=this.GraphTranspose();
+//        int curr=dest;
+//        Stack<NodeData> path=new Stack<NodeData>();
+//        while(curr!=src){
+//            int nextid=-1;
+//            Iterator<EdgeData> edgeiter=transposed.edgeIter(curr);
+//            while(edgeiter.hasNext()){
+//                EdgeData e=edgeiter.next();
+//                if(nextid==-1){
+//                    nextid=e.getSrc();
+//                }
+//                if(dist.get(e.getSrc())+e.getWeight()==dist.get(curr)){
+//                    nextid=transposed.getNode(e.getSrc()).getKey();
+//                    break;
+//                }
+//            }
+//            path.push(this.graph.getNode(curr));
+//            curr=nextid;
+//        }
+//        List<NodeData> ret=new LinkedList<NodeData>();
+//        for (NodeData n:path) {
+//            ret.add(0,n);
+//        }
+//        return ret;
+//    }
+//
+//    private int MarkedNodes(HashMap<Integer, Double> dist, HashSet<Integer> needed, int src, HashSet<Integer> outset){
+//        int included=0;
+//        int retid=src;
+//        for (int i:needed) {
+//            Iterator<Integer> iditer=needed.iterator();
+//            while(iditer.hasNext()){
+//                int id=iditer.next();
+//                LinkedList<NodeData> path= (LinkedList<NodeData>) this.ShorterPath(dist, id, src);
+//                int currentcounter=0;
+//                HashSet<Integer> already=new HashSet<Integer>();
+//                for (int j = 0; j < path.size(); j++) {
+//                    if(needed.contains(path.get(i).getKey())){
+//                        already.add(path.get(i).getKey());
+//                        currentcounter++;
+//                    }
+//                }
+//                if(currentcounter>included){
+//                    outset.clear();
+//                    outset.addAll(already);
+//                    included=currentcounter;
+//                    retid=id;
+//                }
+//            }
+//        }
+//        return retid;
+//    }
+//
+//    private void SingleSourceTsp
 
     /**
      * This function Calculate the distance of the longest path that start from a node to any
@@ -308,7 +431,9 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     private double LongestPath(NodeData s){
         int unvisitedcouter= graph.nodeSize();
         DWGraph g= (DWGraph) this.copy();
+        Stack<Integer> path=new Stack<Integer>();
         HashMap<Integer, Double> distance=new HashMap<>();
+        path.push(s.getKey());
         int maxid=-1;
         while(unvisitedcouter>0){
             Iterator<EdgeData> Adj=g.edgeIter(s.getKey());
@@ -336,15 +461,23 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 }
             }
             s.setTag(1);
-            unvisitedcouter--;
-            s= (Node) g.getNode(nextid);
+            if(graph.getNode(nextid).getTag()==1){//if the tag of all of the neighbors are 1->return to the previous node and
+                if(path.isEmpty()==false){
+                    s= graph.getNode(path.pop());
+                }
+            }
+            else {//go to the furthest neighbor
+                path.push(nextid);
+                s = (NodeData) g.getNode(nextid);
+                unvisitedcouter--;
+            }
         }
-//        return distance.get(maxid);
-        double ret=0;
-        for (double x: distance.keySet()) {
-            ret+=x;
-        }
-        return ret;
+        return distance.get(maxid);
+//        double ret=0;
+//        for (double x: distance.keySet()) {
+//            ret+=x;
+//        }
+//        return ret;
     }
     /**
      * Computes a list of consecutive nodes which go over all the nodes in cities.
@@ -480,4 +613,5 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         this.DFS(v, (NodeData w) -> {
         });
     }
+
 }
