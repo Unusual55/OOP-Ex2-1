@@ -4,7 +4,15 @@ package DataStructures;
 import api.EdgeData;
 
 import java.util.Objects;
-
+/**
+ * This class represent an edge in the graph.
+ * The properties of every edge are the id of the source vertex and the destenation vertex, it's weight,
+ * it's info and it's tag which we use in the algorithm to check it's color.
+ * The numbers that represent colors of edges are the same as in Node class:
+ *      -1) White- Unvisited edge which we didn't discover yet
+ *      0) Gray- Unvisited edge which we already discovered
+ *      1) Black- Visited edge which we already left
+ */
 public class Edge implements EdgeData {
     private int src;
     private int dest;
@@ -98,12 +106,21 @@ public class Edge implements EdgeData {
     public void setTag(int t) {
         this.tag = t;
     }
-    
+
+    /**
+     * This fuction returns a string representation of this object
+     * @return String that represents this object
+     */
     @Override
     public String toString() {
         return "" + this.src + "->" + this.dest + " (" + this.weight + ")";
     }
-    
+
+    /**
+     * This function get an object the compare it to this object
+     * @param other The object we compare to this object
+     * @return True if they are equal, otherwise false
+     */
     @Override
     public boolean equals(Object other) {
         if (other == this) return true;

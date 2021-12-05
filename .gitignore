@@ -103,3 +103,10 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 /Ex2/Ex2.iml
 OOP-Ex2.iml
+<dependencies>
+   <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1.1</version>
+   </dependency>
+</dependencies>

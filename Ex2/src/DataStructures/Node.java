@@ -5,7 +5,18 @@ import api.GeoLocation;
 import api.NodeData;
 
 import java.util.Objects;
-
+/*
+This function represent a vertex in the graph.
+The properties every Node object contains are:
+1) key: Unique number that change from every node and used as it's id.
+2) position: Location in the 3D space
+3) weight: The weight this node have
+4) info: Information about the node
+5) tag: Integer property that used as color marking while traveling the graph
+    -1) White- Unvisited node which we didn't discover yet
+    0) Gray- Unvisited node which we already discover
+    1) Black- Visited node which we already left
+ */
 public class Node implements NodeData {
     private int key;
     private GeoLocation position;
@@ -116,12 +127,21 @@ public class Node implements NodeData {
     public void setTag(int t) {
         this.tag = t;
     }
-    
+
+    /**
+     * This function return a String representation of this object
+     * @return String that represent this object
+     */
     @Override
     public String toString() {
         return "(" + key + ")";
     }
-    
+
+    /**
+     * This function get object as an input and check if it's equal to this object
+     * @param other the object we compare this object to
+     * @return True if they are equal, otherwise false
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
