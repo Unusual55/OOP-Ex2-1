@@ -218,20 +218,6 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         }
     }
 
-//    private void Dijkstra(int src, int dest){
-//        HashMap<Integer, Double> dist=new HashMap<>();
-//        HashSet<Integer> visited=new HashSet<Integer>();
-//        Iterator<NodeData> nodes= graph.nodeIter();
-//        while(nodes.hasNext()){
-//            NodeData n=nodes.next();
-//            int key=n.getKey();
-//            visited.add(key);
-//            dist.put(key, Double.MAX_VALUE);
-//        }
-//        dist.replace(src, Double.MAX_VALUE, 0.0);
-//
-//    }
-
     /**
      * Computes the length of the shortest path between src to dest
      * Note: if no such path --> returns -1
@@ -304,7 +290,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         while(nodes.hasNext()){
             Node n= (Node) nodes.next();
             int id=n.getKey();
-            double longest=this.LongestPath(n);
+            double longest=this.MaxShortestPath(id);
             if(mindistance>longest){
                 mindistance=longest;
                 minid=id;
@@ -319,52 +305,52 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         return graph.getNode(minid);
     }
 
-//    /**
-//     * This function is use dijkstra Algorithm with modification: we can't visit any vertex in without set.
-//     * @param distance Empty HashMap that will contain the distances from the other nodes
-//     * @param without Set of ids of nodes we don't want to visit.
-//     */
-//    private void ModifiedDijkstra(HashMap<Integer, Double> distance, HashSet<Integer> without, int src){
-//        int minid=-1, unvisited=this.graph.nodeSize()-without.size();
-//        double mindist=Double.MAX_VALUE;
-//        NodeData curr=this.graph.getNode(src);
-//        distance.put(src, 0.0);
-//        while (unvisited>0){
-//            Iterator<EdgeData> adj=this.graph.edgeIter();
-//            int nextid=-1;
-//            while(adj.hasNext()){
-//                EdgeData e= adj.next();
-//                NodeData neighbor= this.graph.getNode(e.getDest());
-//                if(neighbor.getTag()==1||without.contains(neighbor.getKey())){
-//                    continue;
-//                }
-//                int id=neighbor.getKey();
-//                neighbor.setTag(0);
-//                if(minid==-1){
-//                    minid=id;
-//                }
-//                if(nextid==-1){
-//                    nextid=id;
-//                }
-//                if(!distance.containsKey(id)){
-//                    distance.put(id, Double.MAX_VALUE);
-//                }
-//                if(distance.get(id)>distance.get(src)+e.getWeight()){
-//                    distance.replace(id, distance.get(id), distance.get(src)+e.getWeight());
-//                    if(distance.get(nextid)>distance.get(id)){
-//                        nextid=id;
-//                    }
-//                }
-//            }
-//            if(distance.get(minid)>distance.get(nextid)){
-//                minid=nextid;
-//                mindist=distance.get(minid);
-//            }
-//            unvisited--;
-//            curr.setTag(1);
-//            curr=this.graph.getNode(nextid);
-//        }
-//    }
+    /**
+     * This function is use dijkstra Algorithm with modification: we can't visit any vertex in without set.
+     * @param distance Empty HashMap that will contain the distances from the other nodes
+     * @param without Set of ids of nodes we don't want to visit.
+     */
+    private void ModifiedDijkstra(HashMap<Integer, Double> distance, HashSet<Integer> without, int src){
+        int minid=-1, unvisited=this.graph.nodeSize()-without.size();
+        double mindist=Double.MAX_VALUE;
+        NodeData curr=this.graph.getNode(src);
+        distance.put(src, 0.0);
+        while (unvisited>0){
+            Iterator<EdgeData> adj=this.graph.edgeIter();
+            int nextid=-1;
+            while(adj.hasNext()){
+                EdgeData e= adj.next();
+                NodeData neighbor= this.graph.getNode(e.getDest());
+                if(neighbor.getTag()==1||without.contains(neighbor.getKey())){
+                    continue;
+                }
+                int id=neighbor.getKey();
+                neighbor.setTag(0);
+                if(minid==-1){
+                    minid=id;
+                }
+                if(nextid==-1){
+                    nextid=id;
+                }
+                if(!distance.containsKey(id)){
+                    distance.put(id, Double.MAX_VALUE);
+                }
+                if(distance.get(id)>distance.get(src)+e.getWeight()){
+                    distance.replace(id, distance.get(id), distance.get(src)+e.getWeight());
+                    if(distance.get(nextid)>distance.get(id)){
+                        nextid=id;
+                    }
+                }
+            }
+            if(distance.get(minid)>distance.get(nextid)){
+                minid=nextid;
+                mindist=distance.get(minid);
+            }
+            unvisited--;
+            curr.setTag(1);
+            curr=this.graph.getNode(nextid);
+        }
+    }
 //
 //    private List<NodeData> ShorterPath(HashMap<Integer, Double> dist, int dest, int src) {
 //        DirectedWeightedGraph transposed=this.GraphTranspose();
@@ -423,6 +409,22 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
 //    private void SingleSourceTsp
 
     /**
+     * This function get an id of the source vertex which we will use to find the longest path out of all of the shortest
+     * paths that start from this node
+     * @param src
+     * @return The distance to this node
+     */
+    private double MaxShortestPath(int src){
+        HashMap<Integer, Double> dist=new HashMap<>();
+        this.Dijkstra(dist, src);
+        double maxdistance=0;
+        for (Double distance:dist.values()) {
+            maxdistance=Math.max(distance,maxdistance);
+        }
+        return maxdistance;
+    }
+
+    /**
      * This function Calculate the distance of the longest path that start from a node to any
      * other vertex in the graph
      * @param s the source vertex
@@ -473,11 +475,6 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
             }
         }
         return distance.get(maxid);
-//        double ret=0;
-//        for (double x: distance.keySet()) {
-//            ret+=x;
-//        }
-//        return ret;
     }
     /**
      * Computes a list of consecutive nodes which go over all the nodes in cities.
