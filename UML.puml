@@ -1,0 +1,186 @@
+@startuml
+interface GeoLocation{
++x(): double
++y(): double
++z(): double
++distance(GeoLocation): double
+}
+interface NodeData{
++getKey(int): int
++getLocation(): GeoLocation
++setLocation(GeoLocation): void
++getWeight(): double
++setWeight(double): void
++getInfo(): String
++setInfo(String): void
++getTag(): int
++setTag(int): void
+}
+interface EdgeData{
++getSrc(): int
++getDest(): int
++getWeight(): double
++getInfo(): String
++setInfo(String): void
++getTag(): int
++setTag(int): void
+}
+interface DirectedWeightedGraph{
++getNode(int): NodeData
++getEdge(int, int): EdgeData
++addNode(NodeData): void
++connect(int, int, double): void
++nodeIter(): Iterator<NodeData>
++edgeIter(): Iterator<EdgeData>
++edgeIter(int): Iterator<EdgeData>
++removeNode(int): NodeData
++removeEdge(int, int): EdgeData
++nodeSize(): int
++edgeSize(): int
++getMC(): int
+}
+interface DirectedWeightedGraphAlgorithms{
++init(DirectedWeightedGraph): void
++getGraph(): DirectedWeightedGraph
++copy(): DirectedWeightedGraph
++isConnected(): boolean
++shortestPathDist(int, int): double
++shortestPath(int, int): List<NodeData>
++center(): NodeData
++tsp(List<NodeData>): List<NodeData>
++save(String): boolean
++load(String): boolean
+}
+Class Point3D implements GeoLocation{
+-x: double
+-y: double
+-z: double
++x(): double
++y(): double
++z(): double
++setX(double): void
++setY(double): void
++setZ(double): void
++distance(GeoLocation): double
++toString(): String
++equals(Object): boolean
++hashCode(): int
+}
+class Node implements NodeData{
+-key: int
+-position: GeoLocation
+-weight: double
+-info: String
+-tag: int
++getKey(): int
++getLocation(): GeoLocation
++setLocation(GeoLocation): void
++getWeight(): double
++setWeight(double): void
++getInfo(): String
++setInfo(String): void
++getTag(): int
++setTag(int): void
++toString(): String
++equals(Object): boolean
++hashCode(): int
+}
+class Edge implements EdgeData{
+-src: int
+-dest: int
+-weight: double
+-info: String
+-tag: int
++getSrc(): int
++getDest(): int
++getWeight(): double
++getInfo(): String
++setInfo(String): void
++getTag(): int
++setTag(int): void
++toString(): String
++equals(Object): boolean
++hashCode(): int
+}
+class DWGraph implements DirectedWeightedGraph{
+-nodes: HashMap<Integer, NodeData>
+-edges: HashMap<Integer, HashMap<Integer, EdgeData>>
+-nodecount: int
+-edgecount: int
+-modecount: int
++getNode(int): NodeData
++getEdge(int, int): EdgeData
++addNode(NodeData): void
++connect(int, int, double): void
++removeNode(int): NodeData
++removeEdge(int, int): EdgeData
++nodeSize(): int
++edgeSize(): int
++getMC(): int
+-nodeEquals(Iterator<NodeData>): boolean
+-edgeEquals(Iterator<EdgeData>): boolean
++toString(): String
++equals(Object): boolean
++hashCode(): int
++getNodes(): HashMap<Iterator, NodeData>
++getEdges(): HashMap<Integer, HashMa<Integer, EdgeData>>
+__ nodeIter(): Iterator<NodeData> __
+-it: Iterator<NodeData>
++startModeCounter: int
+-n: Node
++hasNext(): boolean
++next(): NodeData
++remove(): void
++forEachRemaining(Consumer<? super NodeData): void
+__ edgeIter(): Iterator<EdgeData> __
+-it: Iterator<HashMap<Integer,EdgeData>>
+-edge: Iterator<EdgeData>
++startModeCounter: int
+-e: Edge
+-edgecount: int
++hasNext(): boolean
++next(): EdgeData
++remove(): void
++forEachRemaining(Consumer<? super EdgeData): void
+__ edgeIter(int): Iterator<EdgeData> __
+-it: Iterator<EdgeData>
++startModeCounter: int
+-e: Edge
++hasNext(): boolean
++next(): EdgeData
++remove(): void
++forEachRemaining(Consumer<? super EdgeData): void
+}
+class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms{
++graph: DirectedWeightedGraph
+-connectedComponentsTracker: ChangeTracker<HashMap<Integer, Integer>>
++init(DirectedWeightedGraph): void
++getGraph(): DirectedWeightedGraph
++copy(): DirectedWeightedGraph
++isConnected(): boolean
+-isConnected(NodeData, int[], HashMap<Integer, IsConnectedProps>, Stack<NodeData>, HashMap<Integer, Integer>
+-stronglyConnectedComponents(): HashMap<Integer, Integer>
++shortestPathDist(int, int): double
++shortestPath(int, int): List<NodeData>
++center(): NodeData
++LongestPath(NodeData): double
++tsp(List<NodeData>): List<NodeData>
++save(String): boolean
++load(String): boolean
++DFS(NodeData, Consumer<NodeData>): void
++DFS(NodeData): void
+}
+IsConnectedProps --> DWGraphAlgorithms: inner class
+class IsConnectedProps{
++index: int
++lowlink: int
++onstack: boolean
+}
+class ChangeTracker{
+-data: T
+-dataModeCount: int
++setData(T, int): void
++getData(): T
++wasChanged(int): boolean
+}
+@enduml
