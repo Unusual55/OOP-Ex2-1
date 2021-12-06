@@ -4,7 +4,9 @@ package DataStructures;
 import api.GeoLocation;
 import api.NodeData;
 
+import java.util.Comparator;
 import java.util.Objects;
+
 /*
 This function represent a vertex in the graph.
 The properties every Node object contains are:
@@ -17,13 +19,13 @@ The properties every Node object contains are:
     0) Gray- Unvisited node which we already discover
     1) Black- Visited node which we already left
  */
-public class Node implements NodeData {
+public class Node implements NodeData, Comparator<Node> {
     private int key;
     private GeoLocation position;
     private double weight;
     private String info;
     private int tag;
-    
+
     public Node(int key, GeoLocation position, double weight, String info, int tag) {
         this.key = key;
         this.position = position;
@@ -31,11 +33,11 @@ public class Node implements NodeData {
         this.info = info;
         this.tag = tag;
     }
-    
+
     public Node(NodeData other) {
         this(other.getKey(), new Point3D(other.getLocation()), other.getWeight(), other.getInfo(), other.getTag());
     }
-    
+
     /**
      * Returns the key (id) associated with this node.
      *
@@ -45,7 +47,7 @@ public class Node implements NodeData {
     public int getKey() {
         return this.key;
     }
-    
+
     /**
      * Returns the location of this node, if none return null.
      *
@@ -55,7 +57,7 @@ public class Node implements NodeData {
     public GeoLocation getLocation() {
         return this.position;
     }
-    
+
     /**
      * Allows changing this node's location.
      *
@@ -65,7 +67,7 @@ public class Node implements NodeData {
     public void setLocation(GeoLocation p) {
         this.position = new Point3D(p);
     }
-    
+
     /**
      * Returns the weight associated with this node.
      *
@@ -75,7 +77,7 @@ public class Node implements NodeData {
     public double getWeight() {
         return this.weight;
     }
-    
+
     /**
      * Allows changing this node's weight.
      *
@@ -85,7 +87,7 @@ public class Node implements NodeData {
     public void setWeight(double w) {
         this.weight = w;
     }
-    
+
     /**
      * Returns the remark (meta data) associated with this node.
      *
@@ -95,7 +97,7 @@ public class Node implements NodeData {
     public String getInfo() {
         return this.info;
     }
-    
+
     /**
      * Allows changing the remark (meta data) associated with this node.
      *
@@ -105,7 +107,7 @@ public class Node implements NodeData {
     public void setInfo(String s) {
         this.info = s;
     }
-    
+
     /**
      * Temporal data (aka color: e,g, white, gray, black)
      * which can be used be algorithms
@@ -116,7 +118,7 @@ public class Node implements NodeData {
     public int getTag() {
         return this.tag;
     }
-    
+
     /**
      * Allows setting the "tag" value for temporal marking an node - common
      * practice for marking by algorithms.
@@ -130,6 +132,7 @@ public class Node implements NodeData {
 
     /**
      * This function return a String representation of this object
+     *
      * @return String that represent this object
      */
     @Override
@@ -139,6 +142,7 @@ public class Node implements NodeData {
 
     /**
      * This function get object as an input and check if it's equal to this object
+     *
      * @param other the object we compare this object to
      * @return True if they are equal, otherwise false
      */
@@ -146,14 +150,14 @@ public class Node implements NodeData {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
-        Node node = (Node)other;
+        Node node = (Node) other;
         return this.key == node.getKey() &&
                 this.position.equals(node.getLocation()) &&
                 Double.compare(this.weight, node.getWeight()) == 0 &&
                 this.info.equals(node.getInfo()) &&
                 this.tag == node.getTag();
     }
-    
+
     /**
      * Since we have overridden equals we also are required to override hashCode
      *
@@ -162,5 +166,17 @@ public class Node implements NodeData {
     @Override
     public int hashCode() {
         return Objects.hash(this.key, this.position, this.weight, this.info, this.tag);
+    }
+
+    @Override
+    public int compare(Node node1, Node node2) {
+
+        if (node1.getWeight() < node2.getWeight())
+            return -1;
+
+        if (node1.getWeight() > node2.getWeight())
+            return 1;
+
+        return 0;
     }
 }
