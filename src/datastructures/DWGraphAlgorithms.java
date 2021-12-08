@@ -18,6 +18,29 @@ import datastructures.serializers.NodeAdapter;
 
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
+    public static void main(String[] args) {
+        DWGraph g = new DWGraph();
+        g.addNode(new Node('A'));
+        g.addNode(new Node('B'));
+        g.addNode(new Node('C'));
+        g.addNode(new Node('D'));
+        g.addNode(new Node('E'));
+        g.addNode(new Node('F'));
+        
+        g.connect('A', 'B', 10);
+        g.connect('A', 'C', 15);
+        g.connect('B', 'D', 12);
+        g.connect('B', 'F', 15);
+        g.connect('C', 'E', 10);
+        g.connect('D', 'E', 2);
+        g.connect('D', 'F', 1);
+        g.connect('F', 'E', 2);
+        
+        DWGraphAlgorithms alg = new DWGraphAlgorithms();
+        alg.init(g);
+        System.out.println(alg.Dijkstra('A'));
+    }
+    
     private DirectedWeightedGraph graph;
     private final ChangeTracker<Boolean> isConnectedTracker = new ChangeTracker<>();
     private final ChangeTracker<HashMap<Integer, Double>> dijkstraTracker = new ChangeTracker<>();
@@ -151,7 +174,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        return this.Dijkstra(src).getOrDefault(dest, -1.0);
     }
     
     /**
@@ -252,7 +275,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      * @param src The source node id
      * @return Map from node id to distance of the shortest path
      */
-    private HashMap<Integer, Double> Dijkstra(int src) {
+    public HashMap<Integer, Double> Dijkstra(int src) {
         if (!this.dijkstraTracker.wasChanged(this.graph.getMC())) {
             return this.dijkstraTracker.getData();
         }
@@ -262,7 +285,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
             NodeData n = it.next();
             distances.put(n.getKey(), Double.MAX_VALUE);
         }
-        PriorityQueue<NodeData> pq = new PriorityQueue<>(this.graph.nodeSize());
+        PriorityQueue<NodeData> pq = new PriorityQueue<NodeData>(this.graph.nodeSize());
         pq.add(new Node(src, 0.0));
         distances.put(src, 0.0);
         HashSet<Integer> settled = new HashSet<>();
