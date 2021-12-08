@@ -18,52 +18,8 @@ import datastructures.serializers.NodeAdapter;
 
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
-    public static void main(String[] args) {
-        DWGraph g = new DWGraph();
-        g.addNode(new Node('a'));
-        g.addNode(new Node('b'));
-        g.addNode(new Node('c'));
-        g.addNode(new Node('d'));
-        g.addNode(new Node('e'));
-        g.addNode(new Node('f'));
-        g.addNode(new Node('g'));
-        g.addNode(new Node('h'));
-        
-        g.connect('a', 'b', 1.0);
-        g.connect('b', 'c', 1.0);
-        g.connect('b', 'f', 1.0);
-        g.connect('b', 'e', 1.0);
-        g.connect('c', 'd', 1.0);
-        g.connect('c', 'g', 1.0);
-        g.connect('d', 'c', 1.0);
-        g.connect('d', 'h', 1.0);
-        g.connect('e', 'a', 1.0);
-        g.connect('e', 'f', 1.0);
-        g.connect('f', 'g', 1.0);
-        g.connect('g', 'f', 1.0);
-        g.connect('h', 'd', 1.0);
-        g.connect('h', 'g', 1.0);
-        
-        DWGraphAlgorithms alg = new DWGraphAlgorithms();
-        alg.init(g);
-        HashMap<Integer, HashSet<Integer>> map = alg.SCC();
-//        Iterator<Integer> it = map.keySet().iterator();
-//        while (it.hasNext()) {
-//            int key = it.next();
-//            System.out.print("Component " + key + ": ");
-//            for (int id : map.get(key)) {
-//                System.out.print((char)id + " ");
-//            }
-//            System.out.println();
-//        }
-        System.out.println(map);
-//        alg.save("graph.json");
-//        alg.init(new DWGraph());
-//        alg.load("graph.json");
-//        System.out.println(alg.getGraph().edgeSize());
-    }
-    
     private DirectedWeightedGraph graph;
+    private final ChangeTracker<Boolean> isConnectedTracker = new ChangeTracker<>();
     
     public DWGraphAlgorithms() {
         this.graph = new DWGraph();
@@ -107,54 +63,80 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public boolean isConnected() {
-        return false;
-    }
-    
-    public HashMap<Integer, HashSet<Integer>> SCC() {
-        int[] globals = {1};
-        HashMap<Integer, Integer> index = new HashMap<>();
-        HashMap<Integer, Integer> lowlink = new HashMap<>();
-        Stack<Integer> stack = new Stack<>();
-        HashMap<Integer, Boolean> onStack = new HashMap<>();
-        HashMap<Integer, HashSet<Integer>> scc = new HashMap<>();
+        if (!this.isConnectedTracker.wasChanged(this.graph.getMC())) {
+            return this.isConnectedTracker.getData();
+        }
+        if (this.graph.nodeSize() <= 1) {
+            this.isConnectedTracker.setData(true, this.graph.getMC());
+            return true;
+        }
         Iterator<NodeData> it = this.graph.nodeIter();
         while (it.hasNext()) {
             NodeData n = it.next();
-            int v = n.getKey();
-            if (index.get(v) == null) {
-                this.strongconnect(v, globals, index, lowlink, stack, onStack, scc);
+            n.setTag(0);
+        }
+        it = this.graph.nodeIter();
+        NodeData v = it.next();
+        DFS(v, this.graph);
+        it = this.graph.nodeIter();
+        while (it.hasNext()) {
+            NodeData n = it.next();
+            if (n.getTag() == 0) {
+                this.isConnectedTracker.setData(false, this.graph.getMC());
+                return false;
+            }
+            n.setTag(0);
+        }
+        DirectedWeightedGraph transposed = this.transpose();
+        it = transposed.nodeIter();
+        v = it.next();
+        DFS(v, transposed);
+        it = transposed.nodeIter();
+        while (it.hasNext()) {
+            NodeData n = it.next();
+            if (n.getTag() == 0) {
+                this.isConnectedTracker.setData(false, this.graph.getMC());
+                return false;
             }
         }
-        return scc;
+        return true;
     }
     
-    private void strongconnect(int v, int[] globals, HashMap<Integer, Integer> index, HashMap<Integer, Integer> lowlink, Stack<Integer> stack, HashMap<Integer, Boolean> onStack, HashMap<Integer, HashSet<Integer>> scc) {
-        index.put(v, globals[0]);
-        lowlink.put(v, globals[0]);
-        globals[0]++;
-        stack.push(v);
-        onStack.put(v, true);
-        Iterator<EdgeData> it = this.graph.edgeIter(v);
-        while (it.hasNext()) {
-            EdgeData e = it.next();
-            int w = e.getDest();
-            if (index.get(w) == null) {
-                strongconnect(w, globals, index, lowlink, stack, onStack, scc);
-                lowlink.put(v, Math.min(lowlink.get(v), lowlink.get(w)));
-            } else if (onStack.get(w)) {
-                lowlink.put(v, Math.min(lowlink.get(v), index.get(w)));
+    
+    private void DFS(NodeData v, DirectedWeightedGraph g) {
+        Stack<NodeData> S = new Stack<>();
+        S.push(v);
+        while (!S.isEmpty()) {
+            NodeData w = S.pop();
+            int key = w.getKey();
+            if (w.getTag() == 0) {
+                w.setTag(1);
+                Iterator<EdgeData> it = g.edgeIter(key);
+                if (it == null) continue;
+                while (it.hasNext()) {
+                    EdgeData e = it.next();
+                    NodeData u = g.getNode(e.getDest());
+                    if (u.getTag() == 0) {
+                        S.push(u);
+                    }
+                }
             }
         }
-        if (Objects.equals(lowlink.get(v), index.get(v))) {
-            HashSet<Integer> component = new HashSet<>();
-            int w;
-            do {
-                w = stack.pop();
-                onStack.put(w, false);
-                component.add(w);
-            } while (w != v);
-            scc.put(scc.size(), component);
+    }
+    
+    private DirectedWeightedGraph transpose() {
+        DirectedWeightedGraph t = new DWGraph();
+        Iterator<NodeData> it = this.graph.nodeIter();
+        while (it.hasNext()) {
+            NodeData n = it.next();
+            t.addNode(n);
         }
+        Iterator<EdgeData> it2 = this.graph.edgeIter();
+        while (it2.hasNext()) {
+            EdgeData e = it2.next();
+            t.connect(e.getDest(), e.getSrc(), e.getWeight());
+        }
+        return t;
     }
     
     
