@@ -39,11 +39,13 @@ With this class we run the following methods on the graph:
 1. init(DirectedWeightedGraph graph): We assign the input as the current graph.
 2. copy(): We return a copy of the current DirectedWeightedGraph.
 3. getGraph(): We return the current DirectedWeightedGraph.
-4.  
 
-## Data Structures
-
-### Directed Weighted Graph
+As well as the following algorithms:
+1. isConnected(): Return true if the graph is strongly connectd, otherwise it will return false.
+2. shortestPathDist(int src, int dest): Return the distance of the shortest path from source vertex to destenation vertex
+3. shortestPath(int src, int dest): Return a list of NodeData which represent the nodes throughout the way in the shortest path from source vertex to destenation vertex.
+4. center(): Return the NodeData which it's maximal shortest path is the minimal among all of the vertices.
+5. tsp(List<NodeData>): return list of node which represent the optimal path that include all of the NodeData in the input.
 
 There are a lot of ways to represent a graph such as adjacency list, adjacency matrix and incidence matrix.
 
