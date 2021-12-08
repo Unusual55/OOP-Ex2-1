@@ -20,20 +20,43 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     public static void main(String[] args) {
         DWGraph g = new DWGraph();
-        g.addNode(new Node(1, new Point3D(0.321, 0.123, 0.456)));
-        g.addNode(new Node(2, new Point3D(0.123, 0.456, 0.321)));
-        g.addNode(new Node(3, new Point3D(0.456, 0.321, 0.123)));
-        g.addNode(new Node(4, new Point3D(0.321, 0.123, 0.456)));
-        g.addNode(new Node(5, new Point3D(0.123, 0.456, 0.321)));
+        g.addNode(new Node('a'));
+        g.addNode(new Node('b'));
+        g.addNode(new Node('c'));
+        g.addNode(new Node('d'));
+        g.addNode(new Node('e'));
+        g.addNode(new Node('f'));
+        g.addNode(new Node('g'));
+        g.addNode(new Node('h'));
         
-        g.connect(1, 2, 43.675);
-        g.connect(1, 4, 23.456);
-        g.connect(2, 3, 34.567);
-        g.connect(2, 4, 45.678);
-        g.connect(4, 5, 67.890);
-    
+        g.connect('a', 'b', 1.0);
+        g.connect('b', 'c', 1.0);
+        g.connect('b', 'f', 1.0);
+        g.connect('b', 'e', 1.0);
+        g.connect('c', 'd', 1.0);
+        g.connect('c', 'g', 1.0);
+        g.connect('d', 'c', 1.0);
+        g.connect('d', 'h', 1.0);
+        g.connect('e', 'a', 1.0);
+        g.connect('e', 'f', 1.0);
+        g.connect('f', 'g', 1.0);
+        g.connect('g', 'f', 1.0);
+        g.connect('h', 'd', 1.0);
+        g.connect('h', 'g', 1.0);
+        
         DWGraphAlgorithms alg = new DWGraphAlgorithms();
         alg.init(g);
+        HashMap<Integer, HashSet<Integer>> map = alg.SCC();
+//        Iterator<Integer> it = map.keySet().iterator();
+//        while (it.hasNext()) {
+//            int key = it.next();
+//            System.out.print("Component " + key + ": ");
+//            for (int id : map.get(key)) {
+//                System.out.print((char)id + " ");
+//            }
+//            System.out.println();
+//        }
+        System.out.println(map);
 //        alg.save("graph.json");
 //        alg.init(new DWGraph());
 //        alg.load("graph.json");
@@ -85,6 +108,53 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     @Override
     public boolean isConnected() {
         return false;
+    }
+    
+    public HashMap<Integer, HashSet<Integer>> SCC() {
+        int[] globals = {1};
+        HashMap<Integer, Integer> index = new HashMap<>();
+        HashMap<Integer, Integer> lowlink = new HashMap<>();
+        Stack<Integer> stack = new Stack<>();
+        HashMap<Integer, Boolean> onStack = new HashMap<>();
+        HashMap<Integer, HashSet<Integer>> scc = new HashMap<>();
+        Iterator<NodeData> it = this.graph.nodeIter();
+        while (it.hasNext()) {
+            NodeData n = it.next();
+            int v = n.getKey();
+            if (index.get(v) == null) {
+                this.strongconnect(v, globals, index, lowlink, stack, onStack, scc);
+            }
+        }
+        return scc;
+    }
+    
+    private void strongconnect(int v, int[] globals, HashMap<Integer, Integer> index, HashMap<Integer, Integer> lowlink, Stack<Integer> stack, HashMap<Integer, Boolean> onStack, HashMap<Integer, HashSet<Integer>> scc) {
+        index.put(v, globals[0]);
+        lowlink.put(v, globals[0]);
+        globals[0]++;
+        stack.push(v);
+        onStack.put(v, true);
+        Iterator<EdgeData> it = this.graph.edgeIter(v);
+        while (it.hasNext()) {
+            EdgeData e = it.next();
+            int w = e.getDest();
+            if (index.get(w) == null) {
+                strongconnect(w, globals, index, lowlink, stack, onStack, scc);
+                lowlink.put(v, Math.min(lowlink.get(v), lowlink.get(w)));
+            } else if (onStack.get(w)) {
+                lowlink.put(v, Math.min(lowlink.get(v), index.get(w)));
+            }
+        }
+        if (Objects.equals(lowlink.get(v), index.get(v))) {
+            HashSet<Integer> component = new HashSet<>();
+            int w;
+            do {
+                w = stack.pop();
+                onStack.put(w, false);
+                component.add(w);
+            } while (w != v);
+            scc.put(scc.size(), component);
+        }
     }
     
     
