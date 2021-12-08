@@ -309,7 +309,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 
                 // If current node hasn't already been processed
                 if (!settled.contains(v.getKey())) {
-                    edgeDistance = v.getWeight();
+                    edgeDistance = e.getWeight();
                     newDistance = distances.get(u) + edgeDistance;
                     
                     // If new distance is cheaper in cost
