@@ -20,6 +20,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     private DirectedWeightedGraph graph;
     private final ChangeTracker<Boolean> isConnectedTracker = new ChangeTracker<>();
+    private final ChangeTracker<HashMap<Integer, Double>> dijkstraTracker = new ChangeTracker<>();
     
     public DWGraphAlgorithms() {
         this.graph = new DWGraph();
@@ -99,9 +100,9 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 return false;
             }
         }
+        this.isConnectedTracker.setData(true, this.graph.getMC());
         return true;
     }
-    
     
     private void DFS(NodeData v, DirectedWeightedGraph g) {
         Stack<NodeData> S = new Stack<>();
@@ -154,7 +155,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     }
     
     /**
-     * Computes the the shortest path between src to dest - as an ordered List of nodes:
+     * Computes the shortest path between src to dest - as an ordered List of nodes:
      * src--> n1-->n2-->...dest
      * see: https://en.wikipedia.org/wiki/Shortest_path_problem
      * Note if no such path --> returns null;
@@ -248,10 +249,14 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     /**
      * This function calculate the shortest path to every node that start from src node and return the index
      *
-     * @param distances Empty HashMap that will contain the distances
-     * @param src       The source node id
+     * @param src The source node id
+     * @return Map from node id to distance of the shortest path
      */
-    private void Dijkstra(HashMap<Integer, Double> distances, int src) {
+    private HashMap<Integer, Double> Dijkstra(int src) {
+        if (!this.dijkstraTracker.wasChanged(this.graph.getMC())) {
+            return this.dijkstraTracker.getData();
+        }
+        HashMap<Integer, Double> distances = new HashMap<>();
         Iterator<NodeData> it = this.graph.nodeIter();
         while (it.hasNext()) {
             NodeData n = it.next();
@@ -263,8 +268,10 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         HashSet<Integer> settled = new HashSet<>();
         
         while (settled.size() != this.graph.nodeSize()) {
-            if (pq.isEmpty())
-                return;
+            if (pq.isEmpty()) {
+                this.dijkstraTracker.setData(distances, this.graph.getMC());
+                return distances;
+            }
             int u = pq.remove().getKey();
             if (settled.contains(u))
                 continue;
@@ -291,6 +298,8 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 }
             }
         }
+        this.dijkstraTracker.setData(distances, this.graph.getMC());
+        return distances;
     }
     
 }
