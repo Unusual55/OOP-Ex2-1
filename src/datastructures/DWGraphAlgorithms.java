@@ -234,15 +234,45 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         if (cities.size() == 1) {
             return cities;
         }
-        HashMap<Integer, HashMap<Integer, LinkedList<Integer>>> shortestPaths = new HashMap<>();
-        for (NodeData n : cities) {
-            int src = n.getKey();
-            HashMap<Integer, LinkedList<Integer>> paths = this.DijkstraPaths(src);
-            shortestPaths.put(src, paths);
+        int currentNode = cities.get(0).getKey();
+        LinkedList<NodeData> path = new LinkedList<>();
+        HashSet<NodeData> unvisitedCities = new HashSet<>(cities);
+        unvisitedCities.addAll(cities);
+        while (unvisitedCities.size() > 0) {
+            HashMap<Integer, LinkedList<Integer>> shortestPath = this.DijkstraPaths(currentNode);
+            HashMap<Integer, Double> distances = this.distancesFromPaths(shortestPath);
+            HashMap<Integer, LinkedList<Integer>> unvisitedShortestPath = new HashMap<>();
+            shortestPath.remove(currentNode);
+            double minDist = Double.MAX_VALUE;
+            int minKey = -1;
+            for (NodeData n : unvisitedCities) {
+                int key = n.getKey();
+                if (key == currentNode) continue;
+                if (shortestPath.get(key) != null) {
+                    unvisitedShortestPath.put(key, shortestPath.get(key));
+                    if (distances.get(key) < minDist) {
+                        minDist = distances.get(key);
+                        minKey = key;
+                    }
+                } else {
+                    System.out.println(n);
+                    return null;
+                }
+            }
+            LinkedList<Integer> minPath = unvisitedShortestPath.get(minKey);
+            for (int key : minPath) {
+                NodeData node = this.graph.getNode(key);
+                if (unvisitedCities.contains(this.graph.getNode(key))) {
+                    unvisitedCities.remove(this.graph.getNode(key)); // TODO
+                }
+                
+                if (path.peekLast() == null || !path.peekLast().equals(node)) {
+                    path.add(node);
+                }
+            }
+            currentNode = minKey;
         }
-        
-        
-        return null;
+        return path;
     }
     
     /**
@@ -411,6 +441,19 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         paths = this.getPath(parentNode, src);
 //        this.shortestDistanceTracker.setData(distances, this.graph.getMC());
         return paths;
+    }
+    
+    private HashMap<Integer, Double> distancesFromPaths(HashMap<Integer, LinkedList<Integer>> paths) {
+        HashMap<Integer, Double> distances = new HashMap<>();
+        for (int key : paths.keySet()) {
+            LinkedList<Integer> path = paths.get(key);
+            double distance = 0.0;
+            for (int i = 0; i < path.size() - 1; i++) {
+                distance += this.graph.getEdge(path.get(i), path.get(i + 1)).getWeight();
+            }
+            distances.put(key, distance);
+        }
+        return distances;
     }
     
     private HashMap<Integer, LinkedList<Integer>> getPath(HashMap<Integer, Integer> parentNode, int src) {
