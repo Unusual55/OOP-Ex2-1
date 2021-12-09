@@ -246,6 +246,17 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
+        if (cities.size() == 1) {
+            return cities;
+        }
+        HashMap<Integer, HashMap<Integer, LinkedList<Integer>>> shortestPaths = new HashMap<>();
+        for (NodeData n : cities) {
+            int src = n.getKey();
+            HashMap<Integer, LinkedList<Integer>> paths = this.DijkstraPaths(src);
+            shortestPaths.put(src, paths);
+        }
+        
+        
         return null;
     }
     
