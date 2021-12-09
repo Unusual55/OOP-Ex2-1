@@ -27,6 +27,22 @@ Each Edge object have it's source node id, destenation node id and Since the gra
 
 
 ### DWGraph
+There are a lot of ways to represent a graph such as adjacency list, adjacency matrix and incidence matrix.
+* Adjacency list - Vertices are stored as records or objects, and every vertex stores a list of adjacent vertices. This data structure allows the storage of additional data on the vertices. Additional data can be stored if edges are also stored as objects, in which case each vertex stores its incident edges and each edge stores its incident vertices.
+* Adjacency matrix - A two-dimensional matrix, in which the rows represent source vertices and columns represent destination vertices. Data on edges and vertices must be stored externally. Only the cost for one edge can be stored between each pair of vertices.
+* Incidence matrix -  A two-dimensional matrix, in which the rows represent the vertices and columns represent the edges. The entries indicate the incidence relation between the vertex at a row and edge at a column.
+
+|                                                                                  | Adjacency list                                                                    | Adjacency matrix                                                      | Incidence matrix                                                                |
+|----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| Store graph                                                                      | ![][EQ1]                                                                          | ![][EQ5]                                                              | ![][EQ6]                                                                        |
+| Add vertex                                                                       | ![][EQ2]                                                                          | ![][EQ5]                                                              | ![][EQ6]                                                                        |
+| Add edge                                                                         | ![][EQ2]                                                                          | ![][EQ2]                                                              | ![][EQ6]                                                                        |
+| Remove vertex                                                                    | ![][EQ3]                                                                          | ![][EQ5]                                                              | ![][EQ6]                                                                        |
+| Remove edge                                                                      | ![][EQ4]                                                                          | ![][EQ4]                                                              | ![][EQ6]                                                                        |
+| Are vertices x and y adjacent (assuming that their storage positions are known)? | ![][EQ4]                                                                          | ![][EQ4]                                                              | ![][EQ3]                                                                        |
+| Remarks                                                                          | Slow to remove vertices and edges, because it needs to find all vertices or edges | Slow to add or remove vertices, because matrix must be resized/copied | Slow to add or remove vertices and edges, because matrix must be resized/copied |
+
+[Source](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)#Common_Data_Structures_for_Graph_Representation)
 DWGraph object implements DirectedWeightedGraph interface.
 It represents an Directed Weighted Graph.
 This object have 2 HashMaps that used to contain the Nodes and the Edges, a counters for the number of nodes and edges, and mode counter which count the number of times we changed the graph in terms of adding or removing nodes and edges.
@@ -47,19 +63,6 @@ As well as the following algorithms:
 4. center(): Return the NodeData which it's maximal shortest path is the minimal among all of the vertices.
 5. tsp(List<NodeData>): return list of node which represent the optimal path that include all of the NodeData in the input.
 
-There are a lot of ways to represent a graph such as adjacency list, adjacency matrix and incidence matrix.
-
-|                                                                                  | Adjacency list                                                                    | Adjacency matrix                                                      | Incidence matrix                                                                |
-|----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| Store graph                                                                      | ![][EQ1]                                                                          | ![][EQ5]                                                              | ![][EQ6]                                                                        |
-| Add vertex                                                                       | ![][EQ2]                                                                          | ![][EQ5]                                                              | ![][EQ6]                                                                        |
-| Add edge                                                                         | ![][EQ2]                                                                          | ![][EQ2]                                                              | ![][EQ6]                                                                        |
-| Remove vertex                                                                    | ![][EQ3]                                                                          | ![][EQ5]                                                              | ![][EQ6]                                                                        |
-| Remove edge                                                                      | ![][EQ4]                                                                          | ![][EQ4]                                                              | ![][EQ6]                                                                        |
-| Are vertices x and y adjacent (assuming that their storage positions are known)? | ![][EQ4]                                                                          | ![][EQ4]                                                              | ![][EQ3]                                                                        |
-| Remarks                                                                          | Slow to remove vertices and edges, because it needs to find all vertices or edges | Slow to add or remove vertices, because matrix must be resized/copied | Slow to add or remove vertices and edges, because matrix must be resized/copied |
-
-[Source](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)#Common_Data_Structures_for_Graph_Representation)
 
 [EQ1]: https://latex.codecogs.com/svg.latex?O%28%7CV%7C&plus;%7CE%7C%29
 [EQ2]: https://latex.codecogs.com/svg.latex?O%281%29
