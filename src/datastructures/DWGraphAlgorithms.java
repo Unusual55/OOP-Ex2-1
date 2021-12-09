@@ -20,6 +20,23 @@ import datastructures.serializers.NodeAdapter;
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     
+    public static void main(String[] args) {
+        DWGraphAlgorithms g = new DWGraphAlgorithms();
+        g.init(new DWGraph());
+//        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\1000Nodes.json");
+        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\10000Nodes.json");
+        long start = System.currentTimeMillis();
+        NodeData n = g.center();
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(n);
+//        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\data\\G1.json");
+//        System.out.println(g.center().getKey()); // should be 8
+//        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\data\\G2.json");
+//        System.out.println(g.center().getKey()); // should be 0
+//        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\data\\G3.json");
+//        System.out.println(g.center().getKey()); // should be 40
+    }
+    
     private DirectedWeightedGraph graph;
     private final ChangeTracker<Boolean> isConnectedTracker = new ChangeTracker<>();
 //   TODO: implement Dijkstra change tracker - (need to change last src that was used)
@@ -184,13 +201,39 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     /**
      * Finds the NodeData which minimizes the max distance to all the other nodes.
-     * Assuming the graph isConnected, elese return null. See: https://en.wikipedia.org/wiki/Graph_center
+     * Assuming the graph isConnected, else return null. See: https://en.wikipedia.org/wiki/Graph_center
      *
-     * @return the Node data to which the max shortest path to all the other nodes is minimized.
+     * @return the Node data to which the max the shortest path to all the other nodes is minimized.
      */
     @Override
     public NodeData center() {
-        return null;
+        if (!this.isConnected()) {
+            return null;
+        }
+//        HashMap<Integer, HashMap<Integer, Double>> allPaths = new HashMap<>();
+        HashMap<Integer, Double> longestShortestPath = new HashMap<>();
+        Iterator<NodeData> it = this.graph.nodeIter();
+        while (it.hasNext()) {
+            NodeData n = it.next();
+            HashMap<Integer, Double> shortestPaths = this.Dijkstra(n.getKey());
+            double max = -1.0;
+            for (Map.Entry<Integer, Double> entry : shortestPaths.entrySet()) {
+                if (entry.getValue() > max) {
+                    max = entry.getValue();
+                }
+            }
+            longestShortestPath.put(n.getKey(), max);
+//            longestShortestPath.put(n.getKey(), this.Dijkstra(n.getKey()).values().stream().mapToDouble(i -> i).max().getAsDouble());
+        }
+        double min = Double.MAX_VALUE;
+        int center = 0;
+        for (Map.Entry<Integer, Double> entry : longestShortestPath.entrySet()) {
+            if (entry.getValue() < min) {
+                min = entry.getValue();
+                center = entry.getKey();
+            }
+        }
+        return this.graph.getNode(center);
     }
     
     /**
