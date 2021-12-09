@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,32 +19,12 @@ import datastructures.serializers.NodeAdapter;
 
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
-    public static void main(String[] args) {
-        DWGraph g = new DWGraph();
-        g.addNode(new Node('A'));
-        g.addNode(new Node('B'));
-        g.addNode(new Node('C'));
-        g.addNode(new Node('D'));
-        g.addNode(new Node('E'));
-        g.addNode(new Node('F'));
-        
-        g.connect('A', 'B', 10);
-        g.connect('A', 'C', 15);
-        g.connect('B', 'D', 12);
-        g.connect('B', 'F', 15);
-        g.connect('C', 'E', 10);
-        g.connect('D', 'E', 2);
-        g.connect('D', 'F', 1);
-        g.connect('F', 'E', 2);
-        
-        DWGraphAlgorithms alg = new DWGraphAlgorithms();
-        alg.init(g);
-        System.out.println(alg.Dijkstra('A'));
-    }
     
     private DirectedWeightedGraph graph;
     private final ChangeTracker<Boolean> isConnectedTracker = new ChangeTracker<>();
-    private final ChangeTracker<HashMap<Integer, Double>> dijkstraTracker = new ChangeTracker<>();
+//   TODO: implement Dijkstra change tracker - (need to change last src that was used)
+//    private final ChangeTracker<HashMap<Integer, Double>> shortestDistanceTracker = new ChangeTracker<>();
+//    private final ChangeTracker<HashMap<Integer, LinkedList<Integer>>> shortestPathTracker = new ChangeTracker<>();
     
     public DWGraphAlgorithms() {
         this.graph = new DWGraph();
@@ -189,7 +170,16 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        return null;
+        List<NodeData> path = new ArrayList<>();
+        if (src == dest) {
+            path.add(this.graph.getNode(src));
+            return path;
+        }
+        path = this.DijkstraPaths(src).get(dest).stream().map(i -> this.graph.getNode(i)).collect(Collectors.toList());
+        if (path.size() == 1) {
+            return null;
+        }
+        return path;
     }
     
     /**
@@ -276,9 +266,9 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      * @return Map from node id to distance of the shortest path
      */
     public HashMap<Integer, Double> Dijkstra(int src) {
-        if (!this.dijkstraTracker.wasChanged(this.graph.getMC())) {
-            return this.dijkstraTracker.getData();
-        }
+//        if (!this.shortestDistanceTracker.wasChanged(this.graph.getMC())) {
+//            return this.shortestDistanceTracker.getData();
+//        }
         HashMap<Integer, Double> distances = new HashMap<>();
         Iterator<NodeData> it = this.graph.nodeIter();
         while (it.hasNext()) {
@@ -292,7 +282,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         
         while (settled.size() != this.graph.nodeSize()) {
             if (pq.isEmpty()) {
-                this.dijkstraTracker.setData(distances, this.graph.getMC());
+//                this.shortestDistanceTracker.setData(distances, this.graph.getMC());
                 return distances;
             }
             int u = pq.remove().getKey();
@@ -321,8 +311,91 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 }
             }
         }
-        this.dijkstraTracker.setData(distances, this.graph.getMC());
+//        this.shortestDistanceTracker.setData(distances, this.graph.getMC());
         return distances;
     }
     
+    /**
+     * This function calculate the shortest path to every node that start from src node and return the index
+     *
+     * @param src The source node id
+     * @return Map from node id to distance of the shortest path
+     */
+    public HashMap<Integer, LinkedList<Integer>> DijkstraPaths(int src) {
+//        if (!this.shortestPathTracker.wasChanged(this.graph.getMC())) {
+//            return this.shortestPathTracker.getData();
+//        }
+        HashMap<Integer, LinkedList<Integer>> paths = new HashMap<>();
+        
+        HashMap<Integer, Integer> parentNode = new HashMap<>();
+        HashMap<Integer, Double> distances = new HashMap<>();
+        Iterator<NodeData> it = this.graph.nodeIter();
+        while (it.hasNext()) {
+            NodeData n = it.next();
+            distances.put(n.getKey(), Double.MAX_VALUE);
+        }
+        PriorityQueue<NodeData> pq = new PriorityQueue<NodeData>(this.graph.nodeSize());
+        pq.add(new Node(src, 0.0));
+        distances.put(src, 0.0);
+        parentNode.put(src, -1);
+        HashSet<Integer> settled = new HashSet<>();
+        
+        while (settled.size() != this.graph.nodeSize()) {
+            if (pq.isEmpty()) {
+                paths = this.getPath(parentNode, src);
+//                this.dijkstraTracker.setData(distances, this.graph.getMC());
+//                return distances;
+                return paths;
+            }
+            int u = pq.remove().getKey();
+            if (settled.contains(u))
+                continue;
+            settled.add(u);
+            double edgeDistance = -1;
+            double newDistance = -1;
+            
+            Iterator<EdgeData> eIt = this.graph.edgeIter(u);
+            while (eIt.hasNext()) {
+                EdgeData e = eIt.next();
+                NodeData v = this.graph.getNode(e.getDest());
+                
+                // If current node hasn't already been processed
+                if (!settled.contains(v.getKey())) {
+                    edgeDistance = e.getWeight();
+                    newDistance = distances.get(u) + edgeDistance;
+                    
+                    // If new distance is cheaper in cost
+                    if (newDistance < distances.get(v.getKey())) {
+                        parentNode.put(v.getKey(), u);
+                        distances.put(v.getKey(), newDistance);
+                    }
+                    
+                    // Add the current node to the queue
+                    pq.add(new Node(v.getKey(), distances.get(v.getKey())));
+                }
+            }
+        }
+        paths = this.getPath(parentNode, src);
+//        this.shortestDistanceTracker.setData(distances, this.graph.getMC());
+        return paths;
+    }
+    
+    private HashMap<Integer, LinkedList<Integer>> getPath(HashMap<Integer, Integer> parentNode, int src) {
+        HashMap<Integer, LinkedList<Integer>> path = new HashMap<>();
+        Iterator<NodeData> it = this.graph.nodeIter();
+        while (it.hasNext()) {
+            NodeData n = it.next();
+            LinkedList<Integer> pathList = new LinkedList<>();
+            int curr = n.getKey();
+            while (curr != src && parentNode.get(curr) != null) {
+                pathList.add(curr);
+                curr = parentNode.get(curr);
+            }
+            pathList.add(src);
+            Collections.reverse(pathList);
+            path.put(n.getKey(), pathList);
+            
+        }
+        return path;
+    }
 }
