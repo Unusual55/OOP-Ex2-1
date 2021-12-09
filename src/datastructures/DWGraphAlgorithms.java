@@ -17,25 +17,10 @@ import datastructures.serializers.EdgeAdapter;
 import datastructures.serializers.GraphAdapter;
 import datastructures.serializers.NodeAdapter;
 
+
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     
-    public static void main(String[] args) {
-        DWGraphAlgorithms g = new DWGraphAlgorithms();
-        g.init(new DWGraph());
-//        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\1000Nodes.json");
-        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\10000Nodes.json");
-        long start = System.currentTimeMillis();
-        NodeData n = g.center();
-        System.out.println(System.currentTimeMillis() - start);
-        System.out.println(n);
-//        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\data\\G1.json");
-//        System.out.println(g.center().getKey()); // should be 8
-//        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\data\\G2.json");
-//        System.out.println(g.center().getKey()); // should be 0
-//        g.load("C:\\Users\\nirsa\\Desktop\\University\\OOP\\data\\G3.json");
-//        System.out.println(g.center().getKey()); // should be 40
-    }
     
     private DirectedWeightedGraph graph;
     private final ChangeTracker<Boolean> isConnectedTracker = new ChangeTracker<>();
@@ -319,7 +304,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      * @param src The source node id
      * @return Map from node id to distance of the shortest path
      */
-    public HashMap<Integer, Double> Dijkstra(int src) {
+    private HashMap<Integer, Double> Dijkstra(int src) {
 //        if (!this.shortestDistanceTracker.wasChanged(this.graph.getMC())) {
 //            return this.shortestDistanceTracker.getData();
 //        }
@@ -351,16 +336,13 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 EdgeData e = eIt.next();
                 NodeData v = this.graph.getNode(e.getDest());
                 
-                // If current node hasn't already been processed
                 if (!settled.contains(v.getKey())) {
                     edgeDistance = e.getWeight();
                     newDistance = distances.get(u) + edgeDistance;
                     
-                    // If new distance is cheaper in cost
                     if (newDistance < distances.get(v.getKey()))
                         distances.put(v.getKey(), newDistance);
                     
-                    // Add the current node to the queue
                     pq.add(new Node(v.getKey(), distances.get(v.getKey())));
                 }
             }
@@ -375,7 +357,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      * @param src The source node id
      * @return Map from node id to distance of the shortest path
      */
-    public HashMap<Integer, LinkedList<Integer>> DijkstraPaths(int src) {
+    private HashMap<Integer, LinkedList<Integer>> DijkstraPaths(int src) {
 //        if (!this.shortestPathTracker.wasChanged(this.graph.getMC())) {
 //            return this.shortestPathTracker.getData();
 //        }
@@ -413,18 +395,15 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 EdgeData e = eIt.next();
                 NodeData v = this.graph.getNode(e.getDest());
                 
-                // If current node hasn't already been processed
                 if (!settled.contains(v.getKey())) {
                     edgeDistance = e.getWeight();
                     newDistance = distances.get(u) + edgeDistance;
                     
-                    // If new distance is cheaper in cost
                     if (newDistance < distances.get(v.getKey())) {
                         parentNode.put(v.getKey(), u);
                         distances.put(v.getKey(), newDistance);
                     }
                     
-                    // Add the current node to the queue
                     pq.add(new Node(v.getKey(), distances.get(v.getKey())));
                 }
             }
