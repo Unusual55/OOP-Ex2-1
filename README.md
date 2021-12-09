@@ -1,12 +1,12 @@
 # Object Oriented Programming - Assignment 2
-Nir Sasson and Ofri Tavor's repository for the second assignment of the course Object Oriented Programming.
+Nir Sasson and Ofri Tavor's repository for the second assignment of the course Object-Oriented Programming.
 
 ## Overview
-Graph is probably one of the most useful data structures. There are many intersting algorithm that used on graph, such as Shortest path algorithms, Minimal spanning tree algorithms, Traveling salesman problem and many more.
-In this Assigment we've been tasked with create a Directed Weightted Graph, create graph algorithms to find the center node, the best path for TSP, the shortest path and few more algorithm.
+Graph is probably one of the most useful data structures. There are many interesting algorithm that used on graph, such as Shortest path algorithms, Minimal spanning tree algorithms, Traveling salesman problem and many more.
+In this Assigment we've been tasked with create a Directed Weighted Graph, create graph algorithms to find the center node, the best path for TSP, the shortest path and few more algorithm.
 
 ## Modeling the graph
-We start to model the graph by reading the interfaces in order to understand what we need to do and if we need to handle time complexity in some function, which we need to adapt our model so it will handle the needed time complexities.
+We start to model the graph by reading the interfaces in order to understand what we need to do and if we need to handle time complexity in some function, which we need to adapt our model, so it will handle the needed time complexities.
 
 We decided to keep the basic Object: Node, Edge and Point3D as simple as possible and let the DWGraph take care of everything.
 
@@ -18,12 +18,12 @@ Each Point3D object contain 3 double parameters (x,y,z) which we can use in orde
 ### Node
 Node Object implements the NodeData interface.
 It represents a vertex in the graph
-Each node have it's unique id and a Point3D object which represent it's location
+Each node have its unique id and a Point3D object which represent its location
 
 ### Edge
 Edge object implements EdgeData interface.
 It represents an edge in directed weighted graph.
-Each Edge object have it's source node id, destenation node id and Since the graph is weighted graph, each node have it's own weight.
+Each Edge object have its source node id, destination node id and Since the graph is weighted graph, each node have its own weight.
 
 
 ### DWGraph
@@ -43,25 +43,27 @@ There are a lot of ways to represent a graph such as adjacency list, adjacency m
 | Remarks                                                                          | Slow to remove vertices and edges, because it needs to find all vertices or edges | Slow to add or remove vertices, because matrix must be resized/copied | Slow to add or remove vertices and edges, because matrix must be resized/copied |
 
 [Source](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)#Common_Data_Structures_for_Graph_Representation)
+
+
 DWGraph object implements DirectedWeightedGraph interface.
-It represents an Directed Weighted Graph.
-This object have 2 HashMaps that used to contain the Nodes and the Edges, a counters for the number of nodes and edges, and mode counter which count the number of times we changed the graph in terms of adding or removing nodes and edges.
+It represents a Directed Weighted Graph.
+This object has 2 HashMaps that used to contain the Nodes and the Edges, a counters for the number of nodes and edges, and mode counter which count the number of times we changed the graph in terms of adding or removing nodes and edges.
 
 ### DWGraphAlgorithms
 DWGraphAlgorithms object implements DirectedWeightedGraphAlgorithms interface.
 This object handle the algorithm we need to run on our DWGraph.
-This object contain a DirectedWeightedGraph object, which we use our DwGraph in order to implement it.
+This object contains a DirectedWeightedGraph object, which we use our DwGraph in order to implement it.
 With this class we run the following methods on the graph:
 1. init(DirectedWeightedGraph graph): We assign the input as the current graph.
 2. copy(): We return a copy of the current DirectedWeightedGraph.
 3. getGraph(): We return the current DirectedWeightedGraph.
 
 As well as the following algorithms:
-1. isConnected(): Return true if the graph is strongly connectd, otherwise it will return false.
-2. shortestPathDist(int src, int dest): Return the distance of the shortest path from source vertex to destenation vertex
-3. shortestPath(int src, int dest): Return a list of NodeData which represent the nodes throughout the way in the shortest path from source vertex to destenation vertex.
-4. center(): Return the NodeData which it's maximal shortest path is the minimal among all of the vertices.
-5. tsp(List<NodeData>): return list of node which represent the optimal path that include all of the NodeData in the input.
+1. isConnected(): Return true if the graph is strongly connected, otherwise it will return false.
+2. shortestPathDist(int src, int dest): Return the distance of the shortest path from source vertex to destination vertex
+3. shortestPath(int src, int dest): Return a list of NodeData which represent the nodes throughout the way in the shortest path from source vertex to destination vertex.
+4. center(): Return the NodeData which it's maximal shortest path is the minimal among all the vertices.
+5. tsp(List<NodeData>): return list of node which represent the optimal path that include all the NodeData in the input.
 
 
 [EQ1]: https://latex.codecogs.com/svg.latex?O%28%7CV%7C&plus;%7CE%7C%29
