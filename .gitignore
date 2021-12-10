@@ -1,6 +1,6 @@
 *.iml
 
-
+data/
 
 # Compiled class file
 *.class
