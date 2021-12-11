@@ -10,21 +10,6 @@ import java.util.function.Consumer;
 
 public class DWGraph implements DirectedWeightedGraph {
     
-    public static void main(String[] args) {
-        DWGraph g = new DWGraph();
-        
-        g.addNode(new Node(1, 0.0, new Point3D(0, 0, 0), "", -1));
-        g.addNode(new Node(2, 0.0, new Point3D(0, 0, 0), "", -1));
-        g.connect(1, 2, 1.0);
-
-//        DWGraphAlgorithms alg = new DWGraphAlgorithms();
-//        alg.init(g);
-        Iterator<EdgeData> it = g.edgeIter();
-        while (it.hasNext()) {
-            EdgeData e = it.next();
-            System.out.println(e.getSrc() + " " + e.getDest() + " " + e.getWeight());
-        }
-    }
     
     private HashMap<Integer, NodeData> nodes;
     private HashMap<Integer, HashMap<Integer, EdgeData>> outEdges;
