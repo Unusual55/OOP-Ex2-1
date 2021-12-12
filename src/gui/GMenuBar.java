@@ -1,7 +1,6 @@
 package gui;
 
 import api.NodeData;
-import datastructures.DWGraph;
 import api.DirectedWeightedGraphAlgorithms;
 
 import javax.swing.*;
@@ -10,8 +9,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class represent the menu bar in the main panel.
@@ -245,9 +246,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                 if (this.graph.getGraph().getNode(src) == null || this.graph.getGraph().getNode(dest) == null) {
                     throw new IllegalArgumentException();
                 }
-                /**
-                 * Use shortest path function with those inputs and show the result in pop up.
-                 */
+                ArrayList<NodeData> SPath= (ArrayList<NodeData>) this.graph.shortestPath(src,dest);
+                this.gd.CreateMarkedEdgesSP(SPath);
+                this.gd.setAlgoMode();
+                this.gd.repaint();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "You entered an invalid node id.");
             } catch (IllegalArgumentException ex) {
@@ -262,12 +264,13 @@ public class GMenuBar extends JMenuBar implements ActionListener {
             }
         } else if (e.getSource() == tsp) {
             LinkedList<NodeData> sendtoTSP = tspInputTraslator();
+            LinkedList<NodeData> outtsplist= (LinkedList<NodeData>) this.graph.tsp(sendtoTSP);
+            this.gd.CreateMarkedEdgesTSP((outtsplist));
+            this.gd.setAlgoMode();
+            this.gd.repaint();
             if (sendtoTSP.size() == 0) {
                 JOptionPane.showMessageDialog(this, "You didn't enter any valid input, therefore nothing will happen.");
             } else {
-                /**
-                 * Call the TSP function with the list is input
-                 */
             }
         }
         else if(e.getSource()==zoomin){
@@ -346,7 +349,7 @@ public class GMenuBar extends JMenuBar implements ActionListener {
             try {
                 data = JOptionPane.showInputDialog(this, "Enter an id of node for the tsp.\n"
                         + "in order to leave enter q. invalid iputs won't enter the list");
-                if (data == "") {
+                if (data==null||data == "") {
                     break;
                 }
                 if (data.equals("q") || data.equals("Q")) {

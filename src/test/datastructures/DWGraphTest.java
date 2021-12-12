@@ -1,5 +1,5 @@
-package datastructures;
-
+package test.datastructures;
+import datastructures.*;
 import api.EdgeData;
 import api.GeoLocation;
 import api.NodeData;

@@ -10,11 +10,8 @@ import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.awt.Image;
-import java.util.LinkedList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -144,7 +141,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         final double cx = (arrowSize / 2.0f) * Math.cos(angle);
         final double cy = (arrowSize / 2.0f) * Math.sin(angle);
 
-        gfx.setColor(Color.RED);
+//        gfx.setColor(Color.RED);
         final GeneralPath polygon = new GeneralPath();
         polygon.moveTo(end.getX(), end.getY());
         polygon.lineTo(end.getX() + x1, end.getY() + y1);
@@ -152,7 +149,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         polygon.closePath();
         gfx.fill(polygon);
 
-        gfx.setColor(Color.BLACK);
+//        gfx.setColor(Color.BLACK);
         gfx.setStroke(lineStroke);
         gfx.drawLine((int) startx, (int) starty, (int) (end.getX() + cx), (int) (end.getY() + cy));
     }
@@ -168,15 +165,9 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         double dpx = this.BoundingBox[2] - this.BoundingBox[0];
         double dpy = this.BoundingBox[3] - this.BoundingBox[1];
         double dcx = this.BoundingBox[2] - p.x();
-        if(dcx==0.0){
-            dcx=p.x();
-        }
         double dcy = this.BoundingBox[3] - p.y();
-        if(dcy==0.0){
-            dcy=p.y();
-        }
-        double xfixed=(dcx/dpx*(this.width*0.8)+(this.height/8)+mousep.getX())*this.Scale;
-        double yfixed=(dcy/dpy*(this.width*0.8)+(this.height/8)+mousep.getY())*this.Scale;;
+        double xfixed=(dcx/dpx*this.width*0.8+this.height*0.1+this.mousep.getX())*this.Scale;
+        double yfixed=(dcy/dpy*this.width*0.8+this.height*0.1+this.mousep.getY())*this.Scale;
         return new double[]{xfixed, yfixed};
     }
 
@@ -250,10 +241,10 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         NodeData curr = null;
         Dfont = new Font(Font.SANS_SERIF, Font.BOLD, (int) (10+this.Scale));
         g2d.setFont(Dfont);
-        this.HNode=5+this.Scale/5;
-        this.WNode=5+this.Scale/5;
-        this.Hedge=5+this.Scale/5;
-        this.Wedge=5+this.Scale/5;
+        this.HNode=3;
+        this.WNode=3;
+        this.Hedge=5;
+        this.Wedge=5;
         ExecutorService pool= Executors.newFixedThreadPool(100);
         while (nodeiter.hasNext()) {
             curr = nodeiter.next();
@@ -263,7 +254,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         }
         pool.shutdown();
         if(pool.isShutdown()) {
-            Stroke ns=new BasicStroke(5f);
+            Stroke ns=new BasicStroke((float)(3+this.Scale/100));
         this.Nstroke=ns;
         g2d.setStroke(this.Nstroke);
             nodeiter = this.graph.nodeIter();
@@ -294,6 +285,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         this.WNode=3;
         this.Hedge=5;
         this.Wedge=5;
+        Stroke es=new BasicStroke((float)(3+this.Scale/100));
         g2d.setStroke(this.Estroke);
         ExecutorService pool= Executors.newFixedThreadPool(100);
         while (nodeiter.hasNext()) {
@@ -304,7 +296,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         }
         pool.shutdown();
         nodeiter=this.graph.nodeIter();
-        Stroke ns=new BasicStroke((float) (5+this.Scale/5));
+        Stroke ns=new BasicStroke((float) (3+this.Scale/100));
         this.Nstroke=ns;
         g2d.setStroke(this.Nstroke);
         while(nodeiter.hasNext()&&pool.isShutdown()){
@@ -326,9 +318,9 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         NodeData curr = null;
         Dfont = new Font(Font.SANS_SERIF, Font.BOLD, (int) (10+this.Scale));
         g2d.setFont(Dfont);
-        this.WNode=5+this.Scale;
-        this.HNode=5+this.Scale;
-        Stroke ns=new BasicStroke((float) (5+this.Scale));
+        this.WNode=3;
+        this.HNode=3;
+        Stroke ns=new BasicStroke((float) (3+this.Scale/100));
         this.Nstroke=ns;
         g2d.setStroke(this.Nstroke);
         while (nodeiter.hasNext()) {
@@ -339,7 +331,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
                 g2d.setColor(Color.GREEN);
                 g2d.fillOval((int)(coordinates[0] - this.WNode * this.Scale / 2), (int)(coordinates[1] - HNode * this.Scale / 2),
                         (int)(this.HNode * this.Scale/2), (int)(this.WNode * this.Scale/2));
-                g2d.drawString("" + curr.getKey() + " Center", (int) coordinates[0], (int) coordinates[1]);
+                g2d.drawString("" + curr.getKey() + "", (int) coordinates[0], (int) coordinates[1]);
                 g2d.setColor(Color.BLUE);
             } else if (curr.getKey() == centerid) {
                 g2d.setColor(Color.RED);
@@ -354,12 +346,12 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
                 g2d.drawString("" + curr.getKey(), (int) coordinates[0], (int) coordinates[1]);
                 g2d.setColor(Color.BLUE);
             }
-            else{
-                g2d.setColor(Color.BLUE);
-                g2d.fillOval((int)(coordinates[0] - this.WNode * this.Scale / 2), (int)(coordinates[1] - HNode * this.Scale / 2),
-                        (int)(this.HNode * this.Scale / 2), (int)(this.WNode * this.Scale / 2));
-                g2d.drawString("" + curr.getKey(), (int) coordinates[0], (int) coordinates[1]);
-            }
+//            else{
+//                g2d.setColor(Color.BLUE);
+//                g2d.fillOval((int)(coordinates[0] - this.WNode * this.Scale / 2), (int)(coordinates[1] - HNode * this.Scale / 2),
+//                        (int)(this.HNode * this.Scale / 2), (int)(this.WNode * this.Scale / 2));
+//                g2d.drawString("" + curr.getKey(), (int) coordinates[0], (int) coordinates[1]);
+//            }
         }
     }
 
@@ -387,9 +379,15 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
             e = edgeiter.next();
             NodeData Nsrc = this.graph.getNode(e.getSrc());
             NodeData Ndest = this.graph.getNode(e.getDest());
+            int src = Nsrc.getKey(), dest = Ndest.getKey();
+            if(algoflags[1]&&this.markededgesSP.get(src)!=null&&this.markededgesSP.get(src)!=dest){
+                continue;
+            }
+            if(algoflags[2]&&this.markededgesTSP.get(src)!=null&&this.markededgesTSP.get(src)!=dest){
+                continue;
+            }
             double[] Csrc = CoordinatesTransformation(Nsrc.getLocation());
             double[] Cdest = CoordinatesTransformation(Ndest.getLocation());
-            int src = Nsrc.getKey(), dest = Ndest.getKey();
             if (MarkCheckSP(src, dest)) {
                 g2d.setColor(Color.RED);
                 drawArrow(g2d, new Point2D.Double(Csrc[0], Csrc[1]), new Point2D.Double(Cdest[0], Cdest[1]), this.Estroke, this.Estroke, (float) (10 + this.Scale));
@@ -399,10 +397,6 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
                 drawArrow(g2d, new Point2D.Double(Csrc[0], Csrc[1]), new Point2D.Double(Cdest[0], Cdest[1]), this.Estroke, this.Estroke, (float) (10 + this.Scale));
                 g2d.setColor(Color.BLACK);
             }
-//            else{
-//                g2d.setColor(Color.BLACK);
-//                drawArrow(g2d, new Point2D.Double(Csrc[0], Csrc[1]), new Point2D.Double(Cdest[0], Cdest[1]), this.Estroke, this.Estroke, (float) (10 + this.Scale));
-//            }
         }
     }
 
@@ -417,11 +411,12 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         else if(drawflags[3]&&!drawflags[1]) {
             this.DrawNodesRegular(g);
         }
-        else if(drawflags[1]&&drawflags[3])
-            this.setLightMode();
+        else if(drawflags[0]&&drawflags[1])
+            this.selectedColor=Color.black;
+            this.DrawNodesColorSelection(g);
             this.DrawNodesSpecial(g);
             this.drawEdges(g);
-        }
+    }
 
     /**
      * This function create the bufferimage, and when it's ready, replace it with the current graph
@@ -573,15 +568,15 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
      * This Function create a new map of marked edges that we want to mark as they are part of the shortest path
      * @param path
      */
-    public void CreateMarkedEdgesSP(LinkedList<NodeData> path) {
-        if (path != null || path.size() == 0) {
+    public void CreateMarkedEdgesSP(ArrayList<NodeData> path) {
+        if (path == null || path.size() == 0) {
             return;
         }
         algoflags[0]=false;algoflags[1]=true;algoflags[2]=false;
         this.markededgesSP = new HashMap<>();
-        NodeData curr = path.removeFirst();
+        NodeData curr = path.remove(0);
         while (path.size() > 0) {
-            NodeData next = path.removeFirst();
+            NodeData next = path.remove(0);
             this.markededgesSP.put(curr.getKey(), next.getKey());
             curr = next;
         }
@@ -606,7 +601,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
      * @param path
      */
     public void CreateMarkedEdgesTSP(LinkedList<NodeData> path) {
-        if (path != null || path.size() == 0) {
+        if (path == null || path.size() == 0) {
             return;
         }
         algoflags[0]=false;algoflags[1]=false;algoflags[2]=true;
@@ -693,5 +688,12 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
     public void setAlgoMode(){
         drawflags[0]=true;drawflags[1]=true;
         drawflags[2]=false;drawflags[3]=false;
+    }
+    public void resetAlgo(){
+        this.centerid=-1;
+        this.markededgesTSP=new HashMap<>();
+        this.markededgesSP=new HashMap<>();
+        this.markednodesSP=new HashSet<>();
+        this.markednodesTSP=new HashSet<>();
     }
 }
