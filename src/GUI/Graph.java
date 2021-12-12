@@ -10,6 +10,7 @@ import datastructures.Point3D;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -88,6 +89,15 @@ public class Graph extends DWGraph {
         return this;
     }
     
+    
+    public double getWidth() {
+        return this.width;
+    }
+    
+    public double getHeight() {
+        return this.height;
+    }
+    
     public Graph setGraphDimensions(double width, double height) {
         return this.setWidth(width).setHeight(height);
     }
@@ -120,6 +130,54 @@ public class Graph extends DWGraph {
         return this.setMargins(marginLR, marginLR, marginTB, marginTB);
     }
     
+    public double getMarginLeft() {
+        return this.marginLeft;
+    }
+    
+    public double getMarginRight() {
+        return this.marginRight;
+    }
+    
+    public double getMarginTop() {
+        return this.marginTop;
+    }
+    
+    public double getMarginBottom() {
+        return this.marginBottom;
+    }
+    
+    public double getLeft() {
+        return this.marginLeft;
+    }
+    
+    public double getRight() {
+        return this.width - this.marginRight;
+    }
+    
+    public double getTop() {
+        return this.marginTop;
+    }
+    
+    public double getBottom() {
+        return this.height - this.marginBottom;
+    }
+    
+    public double getMinX() {
+        return this.minX;
+    }
+    
+    public double getMinY() {
+        return this.minY;
+    }
+    
+    public double getMaxX() {
+        return this.maxX;
+    }
+    
+    public double getMaxY() {
+        return this.maxY;
+    }
+    
     //endregion
     
     //region Add Vertex
@@ -150,10 +208,10 @@ public class Graph extends DWGraph {
         }
         if (mc == this.getMC())
             return false;
-        this.keys.add(key);
         final double x = this.getNode(key).getLocation().x();
         final double y = this.getNode(key).getLocation().y();
         
+        this.keys.add(key);
         this.vertices.put(key, nd);
         
         if (x < this.minX || y < this.minY || x > this.maxX || y > this.maxY) {
@@ -184,21 +242,22 @@ public class Graph extends DWGraph {
         while (it.hasNext()) {
             NodeData nd = it.next();
             int key = nd.getKey();
-            NodeData n = this.vertices.get(key);
             GeoLocation loc = new Point3D(
                     Graph.map(nd.getLocation().x(), this.minX, this.maxX, this.marginLeft, this.width - this.marginRight),
                     Graph.map(nd.getLocation().y(), this.minY, this.maxY, this.marginTop, this.height - this.marginBottom)
             );
-            n.setLocation(loc);
+            this.vertices.get(key).setLocation(loc);
         }
     }
     
-    public void draw(Graphics g) {
+    public void draw(Graphics g, Point mousePos) {
         Graphics2D g2 = (Graphics2D)g;
 //        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    
+
 //        System.out.println(this.nodeSize());
         Iterator<NodeData> it = super.nodeIter();
+        HashSet<Integer> isOver = new HashSet<>();
+        int i = 0;
         while (it.hasNext()) {
             NodeData nd = it.next();
             int key = nd.getKey();
@@ -206,9 +265,17 @@ public class Graph extends DWGraph {
             GeoLocation loc = n.getLocation();
             
             Point p = this.canvas.WorldToScreen(loc.x(), loc.y());
-            
-            Ellipse2D.Double node = new Ellipse2D.Double(p.getX()  - this.nodeWidth / 2, p.getY()  - this.nodeHeight / 2, this.nodeWidth, this.nodeHeight);
+            double a = this.nodeWidth / 2;
+            double b = this.nodeHeight / 2;
+            Ellipse2D.Double node = new Ellipse2D.Double(p.getX() - a, p.getY() - b, this.nodeWidth, this.nodeHeight);
+//            if (this.marginLeft >= p.x + a || this.width + this.marginRight <= px.x - a || this.marginTop >= node.y + b || this.height + this.marginBottom <= node.y - b) {
+//                System.out.println(key);
+//            }
+//            if (Math.abs(node.x - topLeft.getX()) > a || Math.abs(node.y - this.) > b) {
 //            System.out.println(node.x + " " + node.y + " " + node.width + " " + node.height);
+//            if (node.contains(mousePos)) {
+//                isOver.add(key);
+//            }
             g2.setColor(this.nodeColor);
             g2.fill(node);
             g2.setColor(this.nodeBorderColor);
