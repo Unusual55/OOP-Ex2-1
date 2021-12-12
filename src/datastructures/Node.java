@@ -6,7 +6,7 @@ import api.NodeData;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class Node implements NodeData, Comparator<Node> {
+public class Node implements NodeData, Comparable<Node> {
     
     private int key;
     private double weight;
@@ -203,8 +203,9 @@ public class Node implements NodeData, Comparator<Node> {
         return Objects.hash(this.key, this.weight, this.location, this.info, this.tag);
     }
     
+    
     @Override
-    public int compare(Node node1, Node node2) {
-        return Double.compare(node1.getWeight(), node2.getWeight());
+    public int compareTo(Node o) {
+        return Double.compare(this.getWeight(), o.getWeight());
     }
 }

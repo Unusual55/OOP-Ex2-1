@@ -5,10 +5,7 @@ import api.GeoLocation;
 import api.NodeData;
 import api.DirectedWeightedGraph;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class DWGraph implements DirectedWeightedGraph {
@@ -319,12 +316,9 @@ public class DWGraph implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
-        if (!this.outEdges.containsKey(node_id)) {
-            return null;
-        }
         return new Iterator<>() {
             private int mode = DWGraph.this.modeCounter;
-            private final Iterator<EdgeData> it = DWGraph.this.outEdges.get(node_id).values().iterator();
+            private final Iterator<EdgeData> it = DWGraph.this.outEdges.containsKey(node_id) ? DWGraph.this.outEdges.get(node_id).values().iterator() : null;
             private EdgeData next = null;
             
             @Override
@@ -332,13 +326,16 @@ public class DWGraph implements DirectedWeightedGraph {
                 if (this.mode != DWGraph.this.modeCounter) {
                     throw new RuntimeException("Graph was changed since iterator was constructed.");
                 }
-                return this.it.hasNext();
+                return this.it != null && this.it.hasNext();
             }
             
             @Override
             public EdgeData next() {
                 if (this.mode != DWGraph.this.modeCounter) {
                     throw new RuntimeException("Graph was changed since iterator was constructed.");
+                }
+                if (this.it == null) {
+                    throw new NoSuchElementException();
                 }
                 return this.next = this.it.next();
             }
@@ -347,6 +344,9 @@ public class DWGraph implements DirectedWeightedGraph {
             public void remove() {
                 if (this.mode != DWGraph.this.modeCounter) {
                     throw new RuntimeException("Graph was changed since iterator was constructed.");
+                }
+                if (this.it == null) {
+                    throw new NoSuchElementException();
                 }
                 if (this.next != null) {
                     this.it.remove();
@@ -366,12 +366,9 @@ public class DWGraph implements DirectedWeightedGraph {
     }
     
     public Iterator<EdgeData> inEdgeIter(int node_id) {
-        if (!this.inEdges.containsKey(node_id)) {
-            return null;
-        }
         return new Iterator<>() {
             private int mode = DWGraph.this.modeCounter;
-            private final Iterator<Integer> it = DWGraph.this.inEdges.get(node_id).iterator();
+            private final Iterator<Integer> it = DWGraph.this.inEdges.containsKey(node_id) ? DWGraph.this.inEdges.get(node_id).iterator() : null;
             private EdgeData next = null;
             
             @Override
@@ -379,13 +376,16 @@ public class DWGraph implements DirectedWeightedGraph {
                 if (this.mode != DWGraph.this.modeCounter) {
                     throw new RuntimeException("Graph was changed since iterator was constructed.");
                 }
-                return this.it.hasNext();
+                return this.it != null && this.it.hasNext();
             }
             
             @Override
             public EdgeData next() {
                 if (this.mode != DWGraph.this.modeCounter) {
                     throw new RuntimeException("Graph was changed since iterator was constructed.");
+                }
+                if (this.it == null) {
+                    throw new NoSuchElementException();
                 }
                 return this.next = DWGraph.this.outEdges.get(this.it.next()).get(node_id);
             }
@@ -394,6 +394,9 @@ public class DWGraph implements DirectedWeightedGraph {
             public void remove() {
                 if (this.mode != DWGraph.this.modeCounter) {
                     throw new RuntimeException("Graph was changed since iterator was constructed.");
+                }
+                if (this.it == null) {
+                    throw new NoSuchElementException();
                 }
                 if (this.next != null) {
                     this.it.remove();

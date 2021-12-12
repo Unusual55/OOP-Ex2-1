@@ -5,7 +5,7 @@ import api.GeoLocation;
 
 import java.util.Objects;
 
-public class Edge implements EdgeData {
+public class Edge implements EdgeData, Comparable<Edge> {
     
     private int src;
     private int dest;
@@ -171,5 +171,10 @@ public class Edge implements EdgeData {
     @Override
     public int hashCode() {
         return Objects.hash(this.src, this.dest, this.weight, this.info, this.tag);
+    }
+    
+    @Override
+    public int compareTo(Edge o) {
+        return Double.compare(this.getWeight(), o.getWeight());
     }
 }
