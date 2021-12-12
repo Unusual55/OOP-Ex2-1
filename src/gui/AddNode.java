@@ -1,8 +1,6 @@
 package gui;
-
-import datastructures.Node;
-import datastructures.Point3D;
-import api.NodeData;
+import datastructures.*;
+import api.*;
 import java.awt.Component;
 import javax.swing.*;
 import java.awt.*;

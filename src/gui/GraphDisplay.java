@@ -61,8 +61,10 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
     Graph gr;
     boolean[] drawflags;
     Color selectedColor;
+    boolean[] algoflags;
 
     GraphDisplay(DirectedWeightedGraphAlgorithms g, Graph gr) {
+        algoflags=new boolean[]{false,false,false};
         this.selectedColor=Color.BLACK;
         drawflags= new boolean[]{ true, false,false,false};
         /**
@@ -352,6 +354,12 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
                 g2d.drawString("" + curr.getKey(), (int) coordinates[0], (int) coordinates[1]);
                 g2d.setColor(Color.BLUE);
             }
+            else{
+                g2d.setColor(Color.BLUE);
+                g2d.fillOval((int)(coordinates[0] - this.WNode * this.Scale / 2), (int)(coordinates[1] - HNode * this.Scale / 2),
+                        (int)(this.HNode * this.Scale / 2), (int)(this.WNode * this.Scale / 2));
+                g2d.drawString("" + curr.getKey(), (int) coordinates[0], (int) coordinates[1]);
+            }
         }
     }
 
@@ -391,6 +399,10 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
                 drawArrow(g2d, new Point2D.Double(Csrc[0], Csrc[1]), new Point2D.Double(Cdest[0], Cdest[1]), this.Estroke, this.Estroke, (float) (10 + this.Scale));
                 g2d.setColor(Color.BLACK);
             }
+//            else{
+//                g2d.setColor(Color.BLACK);
+//                drawArrow(g2d, new Point2D.Double(Csrc[0], Csrc[1]), new Point2D.Double(Cdest[0], Cdest[1]), this.Estroke, this.Estroke, (float) (10 + this.Scale));
+//            }
         }
     }
 
@@ -402,10 +414,11 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         if(!drawflags[1]&&!drawflags[3]){//not algorithms, not color frenzy
             this.DrawNodesColorSelection(g);
         }
-        else if(drawflags[3]) {
+        else if(drawflags[3]&&!drawflags[1]) {
             this.DrawNodesRegular(g);
         }
-        else
+        else if(drawflags[1]&&drawflags[3])
+            this.setLightMode();
             this.DrawNodesSpecial(g);
             this.drawEdges(g);
         }
@@ -429,6 +442,8 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
      * @param nextalgo
      */
     public void Update(DirectedWeightedGraphAlgorithms nextalgo) {
+        this.drawflags=new boolean[]{true, false, false, false};
+        this.algoflags=new boolean[]{false, false, false};
         this.width=800;
         this.height=600;
         this.graphAlgorithms = nextalgo;
@@ -535,6 +550,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
      */
     public void setCenterid(int id) {
         this.centerid = id;
+        algoflags[0]=true;algoflags[1]=false;algoflags[2]=false;
         this.repaint();
     }
 
@@ -561,6 +577,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         if (path != null || path.size() == 0) {
             return;
         }
+        algoflags[0]=false;algoflags[1]=true;algoflags[2]=false;
         this.markededgesSP = new HashMap<>();
         NodeData curr = path.removeFirst();
         while (path.size() > 0) {
@@ -592,6 +609,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         if (path != null || path.size() == 0) {
             return;
         }
+        algoflags[0]=false;algoflags[1]=false;algoflags[2]=true;
         this.markededgesTSP = new HashMap<>();
         NodeData curr = path.removeFirst();
         while (path.size() > 0) {
@@ -606,14 +624,14 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         double y2d=this.getHeight()/2+p.z();
         return new Point2D.Double(x2d, y2d);
     }
-    public void setAlgorithmFlag(){
-        drawflags[0]=false;
-        drawflags[1]=true;
-    }
-    public void setRegularFlag(){
-        drawflags[0]=true;
-        drawflags[1]=false;
-    }
+//    public void setAlgorithmFlag(){
+//        drawflags[0]=false;
+//        drawflags[1]=true;
+//    }
+//    public void setRegularFlag(){
+//        drawflags[0]=true;
+//        drawflags[1]=false;
+//    }
     public void resetGraphDisplay(){
         this.selectedColor=Color.BLACK;
         drawflags= new boolean[]{ true, false,false, false};
@@ -671,5 +689,9 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         drawflags[0]=false;drawflags[1]=false;
         drawflags[2]=false;drawflags[3]=true;
         this.selectedColor=Color.black;
+    }
+    public void setAlgoMode(){
+        drawflags[0]=true;drawflags[1]=true;
+        drawflags[2]=false;drawflags[3]=false;
     }
 }

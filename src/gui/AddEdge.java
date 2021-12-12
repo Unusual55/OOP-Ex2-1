@@ -1,7 +1,6 @@
 package gui;
-
-import api.DirectedWeightedGraph;
-
+import datastructures.*;
+import api.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

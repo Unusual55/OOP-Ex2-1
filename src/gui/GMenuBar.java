@@ -213,9 +213,11 @@ public class GMenuBar extends JMenuBar implements ActionListener {
         } else if (e.getSource() == removeedge) {
             rep = new RemoveEdge(this);
         } else if (e.getSource() == center) {
-            /**
-             * Use center function and update it in the gui
-             */
+            NodeData n=this.graph.center();
+            JOptionPane.showMessageDialog(this, "The center node id is: "+n.getKey());
+            this.gd.setCenterid(n.getKey());
+            this.gd.setAlgoMode();
+            this.gd.repaint();
         } else if (e.getSource() == shortdist) {
             int src = -1, dest = -1;
             String srcop = JOptionPane.showInputDialog(this, " Enter an source");
@@ -226,9 +228,8 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                 if (this.graph.getGraph().getNode(src) == null || this.graph.getGraph().getNode(dest) == null) {
                     throw new IllegalArgumentException();
                 }
-                /**
-                 * Use shortest path function with those inputs and show the result in pop up.
-                 */
+                JOptionPane.showMessageDialog(this, "The shortest distance between "
+                +src+" and "+dest+" is: "+this.graph.shortestPathDist(src,dest));
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "You entered an invalid node id.");
             } catch (IllegalArgumentException ex) {
@@ -253,9 +254,12 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                 JOptionPane.showMessageDialog(this, "One or both of the inputs doesn't exist in the graph");
             }
         } else if (e.getSource() == iscon) {
-            /**
-             * Use isConnected() function and print the result in a popup
-             */
+            if(this.graph.isConnected()){
+                JOptionPane.showMessageDialog(this, "The graph is connected");
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "The graph is not connected");
+            }
         } else if (e.getSource() == tsp) {
             LinkedList<NodeData> sendtoTSP = tspInputTraslator();
             if (sendtoTSP.size() == 0) {
@@ -308,9 +312,9 @@ public class GMenuBar extends JMenuBar implements ActionListener {
         else if(e.getSource()==gethelp){
             Help h=new Help();
         }
-        else if(e.getSource()==resetalgo){
-            this.gd.setRegularFlag();
-        }
+//        else if(e.getSource()==resetalgo){
+//            this.gd.setRegularFlag();
+//        }
         else if(e.getSource()==lightmode){
             this.gd.setLightMode();
             this.gd.repaint();
