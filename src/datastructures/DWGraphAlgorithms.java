@@ -254,7 +254,6 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                         minKey = key;
                     }
                 } else {
-                    System.out.println(n);
                     return null;
                 }
             }
