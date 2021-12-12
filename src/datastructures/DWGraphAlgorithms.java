@@ -18,27 +18,6 @@ import datastructures.serializers.NodeAdapter;
 
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
-    public static void main(String[] args) {
-        DWGraph g = new DWGraph();
-        g.addNode(new Node(1, new Point3D(0.321, 0.123, 0.456)));
-        g.addNode(new Node(2, new Point3D(0.123, 0.456, 0.321)));
-        g.addNode(new Node(3, new Point3D(0.456, 0.321, 0.123)));
-        g.addNode(new Node(4, new Point3D(0.321, 0.123, 0.456)));
-        g.addNode(new Node(5, new Point3D(0.123, 0.456, 0.321)));
-        
-        g.connect(1, 2, 43.675);
-        g.connect(1, 4, 23.456);
-        g.connect(2, 3, 34.567);
-        g.connect(2, 4, 45.678);
-        g.connect(4, 5, 67.890);
-    
-        DWGraphAlgorithms alg = new DWGraphAlgorithms();
-        alg.init(g);
-//        alg.save("graph.json");
-//        alg.init(new DWGraph());
-//        alg.load("graph.json");
-//        System.out.println(alg.getGraph().edgeSize());
-    }
     
     private DirectedWeightedGraph graph;
     
