@@ -1,6 +1,7 @@
 *.iml
 
 data/
+src/META-INF
 
 # Compiled class file
 *.class

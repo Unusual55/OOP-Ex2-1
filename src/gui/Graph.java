@@ -18,7 +18,7 @@ public class Graph extends JFrame implements KeyListener {
     DirectedWeightedGraphAlgorithms graphalgo;
     DirectedWeightedGraph g;
     GraphDisplay gd;
-    Graph(DirectedWeightedGraphAlgorithms algo) {
+    public Graph(DirectedWeightedGraphAlgorithms algo) {
         Dimension dimension=Toolkit.getDefaultToolkit().getScreenSize();
         double width=dimension.getWidth();
         double height=dimension.getHeight();
