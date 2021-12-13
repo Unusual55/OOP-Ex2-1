@@ -170,11 +170,17 @@ public class GMenuBar extends JMenuBar implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(this.graph!=this.gd.graphAlgorithms){
+            System.out.println("111");
+        }
         /**
          * If the New Graph menu item was clicked, we will create a new empty graph
          */
         if (e.getSource() == ng) {
             this.gd.resetGraphDisplay();
+            this.graph=this.gd.graphAlgorithms;
+            this.gr.graphalgo=this.gd.graphAlgorithms;
+            this.gr.g=this.gd.graph;
             this.gd.repaint();
         }
         /**
@@ -191,6 +197,9 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                 this.gd.resetGraphDisplay();
                 this.graph.load(this.fileChooser.getSelectedFile().getPath());
                 this.gd.Update(this.graph);
+                this.graph=this.gd.graphAlgorithms;
+                this.gr.graphalgo=this.gd.graphAlgorithms;
+                this.gr.g=this.gd.graph;
                 this.gd.repaint();
             }
         }
