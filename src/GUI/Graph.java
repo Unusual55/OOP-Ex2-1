@@ -20,13 +20,15 @@ public class Graph extends DWGraph {
     private Canvas canvas;
     private HashMap<Integer, NodeData> vertices;
     private HashSet<Integer> keys = new HashSet<>();
+    private NodeData draggingNode = null;
     private int lastUniqueKey = 0;
-    private double marginLeft = 0.0, marginRight = 0.0, marginTop = 0.0, marginBottom = 0.0;
     private double width = 0.0, height = 0.0;
     private double minX, minY, maxX, maxY;
     private double nodeWidth = 1.0, nodeHeight = 1.0;
     private Color nodeColor = new Color(255, 0, 0);
     private Color nodeBorderColor = new Color(0, 255, 0);
+    private Color chosenNodeColor = new Color(255, 0, 255);
+    private Color chosenNodeBorderColor = new Color(0, 255, 0);
     
     public Graph(Canvas canvas) {
         super();
@@ -48,7 +50,7 @@ public class Graph extends DWGraph {
                 this.keys.add(nd.getKey());
             }
         }
-        this.reScale();
+//        this.reScale();
     }
     
     //region Getters and Setters
@@ -102,65 +104,6 @@ public class Graph extends DWGraph {
         return this.setWidth(width).setHeight(height);
     }
     
-    public Graph setMarginLeft(double marginLeft) {
-        this.marginLeft = marginLeft;
-        return this;
-    }
-    
-    public Graph setMarginRight(double marginRight) {
-        this.marginRight = marginRight;
-        return this;
-    }
-    
-    public Graph setMarginTop(double marginTop) {
-        this.marginTop = marginTop;
-        return this;
-    }
-    
-    public Graph setMarginBottom(double marginBottom) {
-        this.marginBottom = marginBottom;
-        return this;
-    }
-    
-    public Graph setMargins(double marginLeft, double marginRight, double marginTop, double marginBottom) {
-        return this.setMarginLeft(marginLeft).setMarginRight(marginRight).setMarginTop(marginTop).setMarginBottom(marginBottom);
-    }
-    
-    public Graph setMargins(double marginLR, double marginTB) {
-        return this.setMargins(marginLR, marginLR, marginTB, marginTB);
-    }
-    
-    public double getMarginLeft() {
-        return this.marginLeft;
-    }
-    
-    public double getMarginRight() {
-        return this.marginRight;
-    }
-    
-    public double getMarginTop() {
-        return this.marginTop;
-    }
-    
-    public double getMarginBottom() {
-        return this.marginBottom;
-    }
-    
-    public double getLeft() {
-        return this.marginLeft;
-    }
-    
-    public double getRight() {
-        return this.width - this.marginRight;
-    }
-    
-    public double getTop() {
-        return this.marginTop;
-    }
-    
-    public double getBottom() {
-        return this.height - this.marginBottom;
-    }
     
     public double getMinX() {
         return this.minX;
@@ -228,7 +171,8 @@ public class Graph extends DWGraph {
             }
             
             if (withReScaling) {
-                this.reScale();
+//                this.reScale();
+//                this.reScale();
             }
         }
         
@@ -237,20 +181,20 @@ public class Graph extends DWGraph {
     
     //endregion
     
-    public void reScale() {
+    public void reScale(double marginLeft, double marginRight, double marginTop, double marginBottom) {
         Iterator<NodeData> it = super.nodeIter();
         while (it.hasNext()) {
             NodeData nd = it.next();
             int key = nd.getKey();
             GeoLocation loc = new Point3D(
-                    Graph.map(nd.getLocation().x(), this.minX, this.maxX, this.marginLeft, this.width - this.marginRight),
-                    Graph.map(nd.getLocation().y(), this.minY, this.maxY, this.marginTop, this.height - this.marginBottom)
+                    Graph.map(nd.getLocation().x(), this.minX, this.maxX, marginLeft, this.width - marginRight),
+                    Graph.map(nd.getLocation().y(), this.minY, this.maxY, marginTop, this.height - marginBottom)
             );
             this.vertices.get(key).setLocation(loc);
         }
     }
     
-    public void draw(Graphics g, Point mousePos) {
+    public void draw(Graphics g, NodeData chosenNode, double fWorldLeft, double fWorldTop, double fWorldRight, double fWorldBottom) {
         Graphics2D g2 = (Graphics2D)g;
 //        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -267,21 +211,41 @@ public class Graph extends DWGraph {
             Point p = this.canvas.WorldToScreen(loc.x(), loc.y());
             double a = this.nodeWidth / 2;
             double b = this.nodeHeight / 2;
-            Ellipse2D.Double node = new Ellipse2D.Double(p.getX() - a, p.getY() - b, this.nodeWidth, this.nodeHeight);
-//            if (this.marginLeft >= p.x + a || this.width + this.marginRight <= px.x - a || this.marginTop >= node.y + b || this.height + this.marginBottom <= node.y - b) {
-//                System.out.println(key);
-//            }
-//            if (Math.abs(node.x - topLeft.getX()) > a || Math.abs(node.y - this.) > b) {
-//            System.out.println(node.x + " " + node.y + " " + node.width + " " + node.height);
-//            if (node.contains(mousePos)) {
-//                isOver.add(key);
+            double x = p.getX() - a;
+            double y = p.getY() - b;
+            Ellipse2D.Double node = new Ellipse2D.Double(x, y, this.nodeWidth, this.nodeHeight);
+//            System.out.println(node.getX());
+            if (this.nodeWidth < 4 || this.nodeHeight < 4 || node.getX() + node.getWidth() < 0 || node.getX() > this.width || node.getY() + node.getHeight() < 0 || node.getY() > this.height) {
+                if (chosenNode != null && chosenNode.getKey() == key) {
+                    chosenNode = null;
+                }
+                continue;
+            }
+
+//            if (chosenNode != null && chosenNode.getKey() == key) {
+//                g2.setColor(Color.MAGENTA);
+//            } else {
+//                g2.setColor(this.nodeColor);
 //            }
             g2.setColor(this.nodeColor);
             g2.fill(node);
             g2.setColor(this.nodeBorderColor);
             g2.draw(node);
-//            g2.fillOval((int)loc.x() - (int)(this.nodeWidth / 2), (int)loc.y() - (int)(this.nodeHeight / 2), (int)(this.nodeWidth), (int)(this.nodeHeight));
-            
+        }
+        if (chosenNode != null) {
+            int key = chosenNode.getKey();
+            NodeData n = this.vertices.get(key);
+            GeoLocation loc = n.getLocation();
+            Point p = this.canvas.WorldToScreen(loc.x(), loc.y());
+            double a = this.nodeWidth / 2;
+            double b = this.nodeHeight / 2;
+            double x = p.getX() - a;
+            double y = p.getY() - b;
+            Ellipse2D.Double node = new Ellipse2D.Double(x, y, this.nodeWidth, this.nodeHeight);
+            g2.setColor(this.chosenNodeColor);
+            g2.fill(node);
+            g2.setColor(this.chosenNodeBorderColor);
+            g2.draw(node);
         }
     }
     

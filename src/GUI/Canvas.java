@@ -1,11 +1,15 @@
 package GUI;
 
-import datastructures.Node;
+import api.GeoLocation;
+import api.NodeData;
+import datastructures.Point3D;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
 public class Canvas extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
     
@@ -25,6 +29,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     
     private double fSelectedCellX = 0.0;
     private double fSelectedCellY = 0.0;
+    private NodeData chosenNode = null;
     
     private final double nodeWidth = 15;
     private final double nodeHeight = 15;
@@ -32,6 +37,14 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     Point2D beforeZoom = null;
     Point2D afterZoom = null;
     
+    private final int hMinGridNumber = 10; // Minimal number of horizontal grid lines
+    private final int vMinGridNumber = 10; // Minimal number of vertical grid lines
+    private final int hMaxGridNumber = 20; // Maximal number of horizontal grid lines
+    private final int vMaxGridNumber = 20; // Maximal number of vertical grid lines
+    private final double hGridRatio = this.hMaxGridNumber / this.hMinGridNumber;
+    private final double vGridRatio = this.vMaxGridNumber / this.vMinGridNumber;
+    private final int hSubGridNumber = 5; // Number of horizontal subgrid lines
+    private final int vSubGridNumber = 5; // Number of vertical subgrid lines
     private double majorGridStepX = 50;
     private double majorGridStepY = 50;
     private double minorGridStepX = 10;
@@ -52,6 +65,15 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         this.addKeyListener(this);
         this.setVisible(true);
         
+    }
+    
+    public Canvas setGraph(Graph graph) {
+        this.graph = graph;
+        return this;
+    }
+    
+    public Graph getGraph() {
+        return this.graph;
     }
     
     // Convert coordinates from World Space --> Screen Space
@@ -111,7 +133,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         return nLinesDrawn;
     }
     
-    
     private int DrawYGrid(Graphics2D g, double spacing, double fWorldLeft, double fWorldTop, double fWorldRight, double fWorldBottom) {
         
         // Draw vertical lines
@@ -138,23 +159,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         super.paint(g);
         
         Graphics2D g2 = (Graphics2D)g;
-        if (this.width == -1 || this.height == -1) {
-            this.width = this.getWidth();
-            this.height = this.getHeight();
-            this.fOffsetX = -((double)this.getWidth()) / 2;
-            this.fOffsetY = -((double)this.getHeight()) / 2;
-//            System.out.println(this.getWidth() + " " + this.getHeight());
-            this.graph.setGraphDimensions(this.width, this.height);
-            System.out.println(this.frame.getWidth() + " " + this.frame.getHeight());
-        }
-        if (this.width != this.getWidth() || this.height != this.getHeight()) {
-            this.width = this.getWidth();
-            this.height = this.getHeight();
-            this.graph.setNodeDimensions(this.nodeWidth, this.nodeHeight);
-            this.graph.setGraphDimensions(this.width, this.height);
-            this.beforeZoom = new Point2D.Double(this.fOffsetX, this.fOffsetY);
-            this.afterZoom = new Point2D.Double(this.fOffsetX, this.fOffsetY);
-            System.out.println(this.getWidth() + " " + this.getHeight() + "---- 2");
+        if (this.width != this.getWidth() || this.height != this.getHeight() || this.width == -1 || this.height == -1) {
+            this.reset();
         }
 //        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
@@ -165,49 +171,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         // Draw Main Axes a 10x10 Unit Grid
         // Draw 10 horizontal lines
         int nLinesDrawn = 0;
-//        for (double y = 0.0; y <= 10.0; y++) {
-//            if (y >= fWorldTop && y <= fWorldBottom) {
-//                double sx = 0.0, sy = y;
-//                double ex = 10.0, ey = y;
-//
-//                Point ps = this.WorldToScreen(sx, sy);
-//                Point pe = this.WorldToScreen(ex, ey);
-//
-//                g2.drawLine(ps.x, ps.y, pe.x, pe.y);
-//                nLinesDrawn++;
-//            }
-//        }
-//
-//        // Draw 10 vertical lines
-//        for (double x = 0.0; x <= 10.0; x++) {
-//            if (x >= fWorldLeft && x <= fWorldRight) {
-//                double sx = x, sy = 0.0;
-//                double ex = x, ey = 10.0;
-//
-//                Point ps = this.WorldToScreen(sx, sy);
-//                Point pe = this.WorldToScreen(ex, ey);
-//
-//                g2.drawLine(ps.x, ps.y, pe.x, pe.y);
-//                nLinesDrawn++;
-//            }
-//        }
         
         Point p = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(p, this);
-
-//        for (double y = this.graph.getTop(); y < this.graph.getBottom(); y += this.majorGridStepY) {
-//            if (y >= fWorldTop && y <= fWorldBottom) {
-//                double sx = 0.0, sy = y;
-//                double ex = this.width, ey = y;
-//
-//                Point ps = this.WorldToScreen(sx, sy);
-//                Point pe = this.WorldToScreen(ex, ey);
-//
-//                g2.drawLine(ps.x, ps.y, pe.x, pe.y);
-//                nLinesDrawn++;
-//            }
-//
-//        }
+        
         BasicStroke stroke;
         stroke = new BasicStroke(1f);
         g2.setStroke(stroke);
@@ -219,45 +186,42 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         g2.setColor(new Color(127, 127, 127, 255));
         nLinesDrawn += this.DrawXGrid(g2, this.majorGridStepX, fWorldLeft, fWorldTop, fWorldRight, fWorldBottom);
         nLinesDrawn += this.DrawYGrid(g2, this.majorGridStepY, fWorldLeft, fWorldTop, fWorldRight, fWorldBottom);
-        stroke = new BasicStroke(2f);
+        stroke = new BasicStroke(2.25f);
         g2.setStroke(stroke);
         g2.setColor(new Color(0, 0, 0, 255));
         nLinesDrawn += this.DrawXAxis(g2, fWorldLeft, fWorldTop, fWorldRight, fWorldBottom);
         nLinesDrawn += this.DrawYAxis(g2, fWorldLeft, fWorldTop, fWorldRight, fWorldBottom);
 //        System.out.println(nLinesDrawn);
 
-//        this.graph.draw(g, p);
-//        g.fillOval((int)this.ScreenToWorld(0, 0).getX(), (int)this.ScreenToWorld(0, 0).getY(), 10, 10);
-//        g.fillOval((int)topLeft.getX()-5, (int)topLeft.getY()-5, 10, 10);
-//        g.fillOval((int)bottomRight.getX(), (int)bottomRight.getY(), 10, 10);
-//        System.out.println(fWorldLeft);
-//        g.fillOval((int)fWorldLeft, (int)fWorldRight, 10, 10);
-//        new Vertex(1, 2, 2, 10).draw(g2);
-//        Edge.drawArrowHead(g2, this.width/2, this.height/2, this.width/2, this.height/2 + 100, 10, 15);
-
-
-//        // Draw selected cell by filling with red circle. Convert cell coords
-//        // into screen space, also scale the radius
-//        int cx, cy, cr;
-//        Point cell = this.WorldToScreen(this.fSelectedCellX + 0.5f, this.fSelectedCellY + 0.5f);
-//        int cr = (int)(this.fScaleX * 0.3f);
-//        g2.setColor(Color.RED);
-//        g2.fillOval(cell.x - cr, cell.y - cr, cr * 2, cr * 2);
-//        WorldToScreen(fSelectedCellX + 0.5f, fSelectedCellY + 0.5f, cx, cy);
-//        cr = 0.3f * fScaleX;
-//        FillCircle(cx, cy, cr, PIXEL_SOLID, FG_RED);
-//        DrawString(2, 2, L"Lines Drawn: " + to_wstring(nLinesDrawn));
-    
+//        double X = 0, Y = 0;
+//        Point P = this.WorldToScreen(X, Y);
+//        double a = 12.5;
+//        double b = 10.0;
+//        Ellipse2D.Double el = new Ellipse2D.Double(P.getX() - a, P.getY() - b, 2*a, 2*b);
+//        g2.setColor(new Color(255, 0, 0, 255));
+//        g2.fill(el);
+//        g2.setColor(new Color(0, 255, 0, 255));
+//        g2.fill(new Ellipse2D.Double(el.x, el.y + b, 4, 4));
+        this.graph.draw(g, this.chosenNode, fWorldLeft, fWorldTop, fWorldRight, fWorldBottom);
     }
     
     private void reset() {
-        this.fOffsetX = -((double)this.getWidth()) / 2;
-        this.fOffsetY = -((double)this.getHeight()) / 2;
+        this.width = this.getWidth();
+        this.height = this.getHeight();
+        this.fOffsetX = -this.width / 2;
+        this.fOffsetY = -this.height / 2;
         this.fScaleX = 1.0;
         this.fScaleY = 1.0;
         this.fStartPanX = 0.0;
         this.fStartPanY = 0.0;
         this.graph.setNodeDimensions(this.nodeWidth, this.nodeHeight);
+        this.graph.setGraphDimensions(this.width, this.height);
+        this.majorGridStepX = this.width / this.hMinGridNumber;
+        this.majorGridStepY = this.majorGridStepX; // this.height / this.vMinGridNumber;
+        this.minorGridStepX = this.majorGridStepX / this.hSubGridNumber;
+        this.minorGridStepY = this.majorGridStepY / this.vSubGridNumber;
+        this.beforeZoom = new Point2D.Double(this.fOffsetX, this.fOffsetY);
+        this.afterZoom = new Point2D.Double(this.fOffsetX, this.fOffsetY);
     }
     
     public void ZOOM(double sign) {
@@ -273,53 +237,33 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         double zoomY = 1.0 - sign * fZoomFactorY;
         this.fScaleX *= zoomX;
         this.fScaleY *= zoomY;
+        
+        Point2D topLeft = this.ScreenToWorld(0, 0);
+        Point2D bottomRight = this.ScreenToWorld((int)this.width, (int)this.height);
+        double fWorldLeft = topLeft.getX(), fWorldTop = topLeft.getY(), fWorldRight = bottomRight.getX(), fWorldBottom = bottomRight.getY();
 
-//        System.out.println(Math.log(this.fScaleX)/Math.log(fZoomFactor));
-//        int sep = (int)Math.abs(Math.log(this.fScaleX)/Math.log(fZoomFactor)) + 1;
-        int sep = 8;
-//        System.out.println(this.fScaleX + " " + this.fScaleY);
-//        System.out.println(this.zoomCounter + " " + sep);
-        int zoomCounterX = (int)(sign*Math.abs(Math.log(this.fScaleX) / Math.log(zoomX)));
-        int zoomCounterY = (int)(sign*Math.abs(Math.log(this.fScaleY) / Math.log(zoomY)));
-//        int sep = (int)Math.log10(zoomCounter) + 1;
+//        int zoomCounterX = (int)(Math.abs(Math.log(this.fScaleX) / Math.log(zoomX)));
+//        int zoomCounterY = (int)(Math.abs(Math.log(this.fScaleY) / Math.log(zoomY)));
+        
         if (sign < 0) {
-            System.out.println(sep);
-            if (Math.abs(zoomCounterX % sep) == sep - 1) {
-                this.majorGridStepX /= 2;
-                this.majorGridStepY /= 2;
-                this.minorGridStepX /= 2;
-                this.minorGridStepY /= 2;
+            if ((fWorldRight - fWorldLeft) / this.majorGridStepX < this.hMinGridNumber) {
+                this.majorGridStepX /= this.hGridRatio;
+                this.minorGridStepX /= this.hGridRatio;
+            }
+            if ((fWorldRight - fWorldLeft) / this.majorGridStepY < this.vMinGridNumber) {
+                this.majorGridStepY /= this.vGridRatio;
+                this.minorGridStepY /= this.vGridRatio;
             }
         } else if (sign > 0) {
-//            if (Math.abs(this.zoomCounter % sep) == 1) {
-//                this.majorGridStepX *= 2;
-//                this.majorGridStepY *= 2;
-//                this.minorGridStepX *= 2;
-//                this.minorGridStepY *= 2;
-//            }
-            
+            if ((fWorldRight - fWorldLeft) / this.majorGridStepX > this.hMaxGridNumber) {
+                this.majorGridStepX *= this.hGridRatio;
+                this.minorGridStepX *= this.hGridRatio;
+            }
+            if ((fWorldRight - fWorldLeft) / this.majorGridStepY > this.vMaxGridNumber) {
+                this.majorGridStepY *= this.vGridRatio;
+                this.minorGridStepY *= this.vGridRatio;
+            }
         }
-
-//        System.out.println(this.fScaleX + " " + this.fScaleY);
-//        int sep = 8;
-//        if (sign < 0) {
-//            if (Math.floor(this.fScaleX) % sep == sep - 1) {
-//                System.out.print("zoomed in - " + this.majorGridStepX + " " + this.majorGridStepY + " --> ");
-//                this.majorGridStepX /= zoom;
-//                this.majorGridStepY /= zoom;
-//                this.minorGridStepX /= zoom/5;
-//                this.minorGridStepY /= zoom/5;
-//                System.out.println(this.majorGridStepX + " " + this.majorGridStepY);
-//            }
-//        } else if (sign > 0) {
-//            if (Math.floor(1/this.fScaleX) % sep == 1) {
-//                this.minorGridStepX *= zoom;
-//                this.minorGridStepY *= zoom;
-//                this.minorGridStepX *= zoom*5;
-//                this.minorGridStepY *= zoom*5;
-//            }
-//        }
-        
         
         p = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(p, this);
@@ -365,8 +309,29 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     @Override
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            this.fStartPanX = e.getX();
-            this.fStartPanY = e.getY();
+            Iterator<NodeData> nIter = this.graph.nodeIter();
+            NodeData minNode = null;
+            double minDist = Double.MAX_VALUE;
+            while (nIter.hasNext()) {
+                NodeData n = nIter.next();
+                GeoLocation loc = n.getLocation();
+                Point2D p = this.ScreenToWorld(e.getX(), e.getY());
+                if (Math.pow((loc.x() - p.getX()) / (this.nodeWidth / 2), 2) + Math.pow((loc.y() - p.getY()) / (this.nodeHeight / 2), 2) > 1) {
+                    continue;
+                }
+                double dist = n.getLocation().distance(new Point3D(p.getX(), p.getY(), 0));
+                if (dist < minDist) {
+                    minDist = dist;
+                    minNode = n;
+                }
+            }
+            if (minNode != null) {
+                this.chosenNode = minNode;
+            } else {
+                this.chosenNode = null;
+                this.fStartPanX = e.getX();
+                this.fStartPanY = e.getY();
+            }
             this.repaint();
         }
     }
@@ -378,9 +343,12 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
      */
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (SwingUtilities.isLeftMouseButton(e) && this.afterZoom != null) {
-            this.fSelectedCellX = this.afterZoom.getX();
-            this.fSelectedCellY = this.afterZoom.getY();
+        if (SwingUtilities.isLeftMouseButton(e)) {
+//            this.chosenNode = null;
+            if (this.afterZoom != null) {
+                this.fSelectedCellX = this.afterZoom.getX();
+                this.fSelectedCellY = this.afterZoom.getY();
+            }
             this.repaint();
         }
     }
@@ -421,10 +389,15 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     @Override
     public void mouseDragged(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            this.fOffsetX -= (e.getX() - this.fStartPanX) / this.fScaleX;
-            this.fOffsetY -= (e.getY() - this.fStartPanY) / this.fScaleY;
-            this.fStartPanX = e.getX();
-            this.fStartPanY = e.getY();
+            if (this.chosenNode == null) {
+                this.fOffsetX -= (e.getX() - this.fStartPanX) / this.fScaleX;
+                this.fOffsetY -= (e.getY() - this.fStartPanY) / this.fScaleY;
+                this.fStartPanX = e.getX();
+                this.fStartPanY = e.getY();
+            } else {
+                Point2D p = this.ScreenToWorld(e.getX(), e.getY());
+                this.chosenNode.setLocation(new Point3D(p.getX(), p.getY(), 0));
+            }
             this.repaint();
         }
         

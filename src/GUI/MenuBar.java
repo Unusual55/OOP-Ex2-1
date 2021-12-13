@@ -13,8 +13,10 @@ public class MenuBar extends JMenuBar implements ActionListener {
     private JMenuItem save;
     private JMenuItem exit;
     
-    JFileChooser fileChooser;
-    
+    private JFileChooser fileChooser;
+    private Graph graph;
+    private Canvas canvas;
+    private JFrame frame;
     
     public MenuBar() {
         this.file = new JMenu("File");
@@ -33,8 +35,22 @@ public class MenuBar extends JMenuBar implements ActionListener {
         this.add(edit);
         this.add(help);
         
-        
         this.setVisible(true);
+    }
+    
+    public MenuBar setGraph(Graph graph) {
+        this.graph = graph;
+        return this;
+    }
+    
+    public MenuBar setCanvas(Canvas canvas) {
+        this.canvas = canvas;
+        return this;
+    }
+    
+    public MenuBar setFrame(JFrame frame) {
+        this.frame = frame;
+        return this;
     }
     
     /**
@@ -44,6 +60,8 @@ public class MenuBar extends JMenuBar implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-    
+        if (e.getSource() == this.load) {
+        
+        }
     }
 }

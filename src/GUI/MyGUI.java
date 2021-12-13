@@ -12,8 +12,8 @@ public class MyGUI extends JFrame {
         this.setTitle("Graph");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        this.menuBar = new MenuBar();
         this.canvas = new Canvas(this);
+        this.menuBar = new MenuBar().setFrame(this).setCanvas(this.canvas).setGraph(this.canvas.getGraph());
         
         
         this.addMouseListener(this.canvas);
