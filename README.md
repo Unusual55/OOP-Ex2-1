@@ -100,7 +100,6 @@ In order to make the data structure minimal both the source and the destination 
 
 ### The Graph
 
-
 There are a lot of ways to represent a graph such as adjacency list, adjacency matrix and incidence matrix.
 
 * Adjacency list - Vertices are stored as records or objects, and every vertex stores a list of adjacent vertices. This data structure allows the storage of additional data on the vertices. Additional data can be stored if edges are also stored as objects, in which case each vertex stores its incident edges and each edge stores its incident vertices.
