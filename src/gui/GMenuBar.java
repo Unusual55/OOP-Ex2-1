@@ -299,14 +299,14 @@ public class GMenuBar extends JMenuBar implements ActionListener {
              */
         } else if (e.getSource() == tsp) {
             LinkedList<NodeData> sendtoTSP = tspInputTraslator();
+            if (sendtoTSP.size() == 0) {
+                JOptionPane.showMessageDialog(this, "You didn't enter any valid input, therefore nothing will happen.");
+                return;
+            }
             LinkedList<NodeData> outtsplist= (LinkedList<NodeData>) this.graph.tsp(sendtoTSP);
             this.gd.CreateMarkedEdgesTSP((outtsplist));
             this.gd.setAlgoMode();
             this.gd.repaint();
-            if (sendtoTSP.size() == 0) {
-                JOptionPane.showMessageDialog(this, "You didn't enter any valid input, therefore nothing will happen.");
-            } else {
-            }
         }
         /**
          * If the user clicked on zoom in and entered a valid value, we will increase the scale in the
@@ -329,7 +329,6 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                     return;
                 }
                 this.gd.Scale+=0.002*count;
-//                this.gd.paint(this.gr.getGraphics());
                 this.gd.repaint();
             }
             catch (NumberFormatException ex){
@@ -346,7 +345,7 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                 return;
             }
             try{
-                String input=JOptionPane.showInputDialog("Enter how much you want to zoom in.");
+                String input=JOptionPane.showInputDialog("Enter how much you want to zoom out.");
                 int count=Integer.parseInt(input);
                 if(count==0){
                     JOptionPane.showMessageDialog(this, "You entered 0, therefore nothing will happen");
@@ -356,8 +355,13 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                     JOptionPane.showMessageDialog(this, "You entered negative integer, therefore nothing will happen");
                     return;
                 }
-                this.gd.Scale-=0.002*count;
-                this.gd.repaint();
+                if(this.gd.Scale-count*0.002>0.01) {
+                    this.gd.Scale -= 0.002 * count;
+                    this.gd.repaint();
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "You can't zoom out more than this.");
+                }
             }
             catch (NumberFormatException ex){
                 JOptionPane.showMessageDialog(this, "The input you enterd is not a valid Integer");

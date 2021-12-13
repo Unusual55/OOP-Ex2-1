@@ -58,16 +58,21 @@ public class Graph extends JFrame implements KeyListener {
         /**
          * If the user clicked on Up Arrow and there are more than one node, it will zoom into the graph
          */
-        else if(e.getKeyCode()==KeyEvent.VK_UP&&this.g.nodeSize()>0){
+        else if(e.getKeyCode()== KeyEvent.VK_UP&&this.gd.graph.nodeSize()>0){
             this.gd.Scale+=0.005;
             repaint();
         }
         /**
          * If the user clicked on Down Arrow and there are more than one node, it will zoom out of the graph.
          */
-        else if(e.getKeyCode()==40&&this.g.nodeSize()>0){
-            this.gd.Scale-=0.005;
-            repaint();
+        else if(e.getKeyCode()==40&&this.gd.graph.nodeSize()>0){
+            if(this.gd.Scale-0.005>0.01) {
+                this.gd.Scale -= 0.005;
+                repaint();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "You can't zoom out more than this");
+            }
         }
     }
 

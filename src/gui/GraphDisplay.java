@@ -558,9 +558,9 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         }
         int c = e.getScrollAmount();
         if (e.getWheelRotation() > 0) {
-            this.Scale += c * 0.02;
-        } else if(this.Scale>0){
-            this.Scale -= c * 0.02;
+            this.Scale += c * 0.002;
+        } else if(this.Scale>0&&this.Scale-c*0.002>0.01){
+            this.Scale -= c * 0.002;
         }
         this.repaint();
     }
@@ -640,20 +640,6 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
             curr = next;
         }
     }
-//
-//    public Point2D GeoLocationToPoint2D(GeoLocation p){
-//        double x2d=this.getWidth()/2 +p.y();
-//        double y2d=this.getHeight()/2+p.z();
-//        return new Point2D.Double(x2d, y2d);
-//    }
-//    public void setAlgorithmFlag(){
-//        drawflags[0]=false;
-//        drawflags[1]=true;
-//    }
-//    public void setRegularFlag(){
-//        drawflags[0]=true;
-//        drawflags[1]=false;
-//    }
 
     /**
      * This function reset the fields in this GraphDisplay in order to reset the fields and the graph without
