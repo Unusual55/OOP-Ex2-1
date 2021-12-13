@@ -1,7 +1,10 @@
 package GUI;
 
+import api.DirectedWeightedGraph;
+import api.DirectedWeightedGraphAlgorithms;
 import api.GeoLocation;
 import api.NodeData;
+import datastructures.DWGraphAlgorithms;
 import datastructures.Point3D;
 
 import javax.swing.*;
@@ -50,11 +53,13 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private double minorGridStepX = 10;
     private double minorGridStepY = 10;
     
+    private DirectedWeightedGraphAlgorithms graphAlgorithms = new DWGraphAlgorithms();
     
     public Canvas(JFrame frame) {
         this.frame = frame;
-        
-        this.graph = new Graph(this).setNodeDimensions(this.nodeWidth, this.nodeHeight);
+        this.init();
+        this.graph.setNodeDimensions(this.nodeWidth, this.nodeHeight);
+//        this.graph = new Graph(this).setNodeDimensions(this.nodeWidth, this.nodeHeight);
 
 //        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 //        this.setPreferredSize(dimension);
@@ -64,6 +69,25 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         this.addMouseWheelListener(this);
         this.addKeyListener(this);
         this.setVisible(true);
+    }
+    
+    public void init() {
+        this.graph = new Graph(this);
+    }
+    
+    public void init(DirectedWeightedGraph graph) {
+        this.graph = new Graph(graph, this);
+        this.graphAlgorithms.init(this.graph);
+        this.fitToScreen();
+    }
+    
+    public void init(String fileName) {
+        this.graphAlgorithms.load(fileName);
+        this.graph = new Graph(this.graphAlgorithms.getGraph(), this);
+        this.fitToScreen();
+    }
+    
+    private void fitToScreen() {
         
     }
     
@@ -284,7 +308,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
      */
     @Override
     public void mouseClicked(MouseEvent e) {
-
 //        if (SwingUtilities.isLeftMouseButton(e)) {
         if (SwingUtilities.isLeftMouseButton(e)) {
             if (e.getClickCount() == 2) {
@@ -296,6 +319,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 SwingUtilities.convertPointFromScreen(p, this);
                 Point2D P = this.ScreenToWorld((int)p.getX(), (int)p.getY());
                 this.graph.addVertex(P.getX(), P.getY());
+                System.out.println("Added vertex at " + P.getX() + ", " + P.getY());
             }
         }
         this.repaint();

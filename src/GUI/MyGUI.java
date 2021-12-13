@@ -13,7 +13,7 @@ public class MyGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         this.canvas = new Canvas(this);
-        this.menuBar = new MenuBar().setFrame(this).setCanvas(this.canvas).setGraph(this.canvas.getGraph());
+        this.menuBar = new MenuBar().setFrame(this).setCanvas(this.canvas);
         
         
         this.addMouseListener(this.canvas);

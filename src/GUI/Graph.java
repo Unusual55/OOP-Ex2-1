@@ -1,6 +1,7 @@
 package GUI;
 
 import api.DirectedWeightedGraph;
+import api.EdgeData;
 import api.GeoLocation;
 import api.NodeData;
 import datastructures.DWGraph;
@@ -16,11 +17,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-public class Graph extends DWGraph {
+public class Graph extends DWGraph implements DirectedWeightedGraph {
     private Canvas canvas;
-    private HashMap<Integer, NodeData> vertices;
     private HashSet<Integer> keys = new HashSet<>();
-    private NodeData draggingNode = null;
     private int lastUniqueKey = 0;
     private double width = 0.0, height = 0.0;
     private double minX, minY, maxX, maxY;
@@ -33,7 +32,6 @@ public class Graph extends DWGraph {
     public Graph(Canvas canvas) {
         super();
         this.canvas = canvas;
-        this.vertices = new HashMap<>();
         this.minX = Double.MAX_VALUE;
         this.minY = Double.MAX_VALUE;
         this.maxX = Double.MIN_VALUE;
@@ -42,14 +40,21 @@ public class Graph extends DWGraph {
     
     public Graph(DirectedWeightedGraph other, Canvas canvas) {
         super(other);
-        this.vertices = new HashMap<>();
-        Iterator<NodeData> it = other.nodeIter();
-        while (it.hasNext()) {
-            NodeData nd = it.next();
+        this.canvas = canvas;
+        Iterator<NodeData> nodeIt = other.nodeIter();
+        while (nodeIt.hasNext()) {
+            NodeData nd = nodeIt.next();
+            this.addNode(nd);
             if (this.addVertex(nd, false)) {
                 this.keys.add(nd.getKey());
             }
         }
+        Iterator<EdgeData> edgeIt = other.edgeIter();
+        while (edgeIt.hasNext()) {
+            EdgeData ed = edgeIt.next();
+            this.connect(ed.getSrc(), ed.getDest(), ed.getWeight());
+        }
+        
 //        this.reScale();
     }
     
@@ -155,7 +160,6 @@ public class Graph extends DWGraph {
         final double y = this.getNode(key).getLocation().y();
         
         this.keys.add(key);
-        this.vertices.put(key, nd);
         
         if (x < this.minX || y < this.minY || x > this.maxX || y > this.maxY) {
             if (x < this.minX) {
@@ -181,18 +185,18 @@ public class Graph extends DWGraph {
     
     //endregion
     
-    public void reScale(double marginLeft, double marginRight, double marginTop, double marginBottom) {
-        Iterator<NodeData> it = super.nodeIter();
-        while (it.hasNext()) {
-            NodeData nd = it.next();
-            int key = nd.getKey();
-            GeoLocation loc = new Point3D(
-                    Graph.map(nd.getLocation().x(), this.minX, this.maxX, marginLeft, this.width - marginRight),
-                    Graph.map(nd.getLocation().y(), this.minY, this.maxY, marginTop, this.height - marginBottom)
-            );
-            this.vertices.get(key).setLocation(loc);
-        }
-    }
+//    public void reScale(double marginLeft, double marginRight, double marginTop, double marginBottom) {
+//        Iterator<NodeData> it = super.nodeIter();
+//        while (it.hasNext()) {
+//            NodeData nd = it.next();
+//            int key = nd.getKey();
+//            GeoLocation loc = new Point3D(
+//                    Graph.map(nd.getLocation().x(), this.minX, this.maxX, marginLeft, this.width - marginRight),
+//                    Graph.map(nd.getLocation().y(), this.minY, this.maxY, marginTop, this.height - marginBottom)
+//            );
+////            this.vertices.get(key).setLocation(loc);
+//        }
+//    }
     
     public void draw(Graphics g, NodeData chosenNode, double fWorldLeft, double fWorldTop, double fWorldRight, double fWorldBottom) {
         Graphics2D g2 = (Graphics2D)g;
@@ -200,13 +204,10 @@ public class Graph extends DWGraph {
 
 //        System.out.println(this.nodeSize());
         Iterator<NodeData> it = super.nodeIter();
-        HashSet<Integer> isOver = new HashSet<>();
-        int i = 0;
         while (it.hasNext()) {
             NodeData nd = it.next();
             int key = nd.getKey();
-            NodeData n = this.vertices.get(key);
-            GeoLocation loc = n.getLocation();
+            GeoLocation loc = nd.getLocation();
             
             Point p = this.canvas.WorldToScreen(loc.x(), loc.y());
             double a = this.nodeWidth / 2;
@@ -233,9 +234,7 @@ public class Graph extends DWGraph {
             g2.draw(node);
         }
         if (chosenNode != null) {
-            int key = chosenNode.getKey();
-            NodeData n = this.vertices.get(key);
-            GeoLocation loc = n.getLocation();
+            GeoLocation loc = chosenNode.getLocation();
             Point p = this.canvas.WorldToScreen(loc.x(), loc.y());
             double a = this.nodeWidth / 2;
             double b = this.nodeHeight / 2;
