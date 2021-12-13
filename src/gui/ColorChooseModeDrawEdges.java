@@ -10,6 +10,11 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
+/**
+ * This class is a thread that draw the edges of specific node with selected color. It gets a pointer to the
+ * graph, a Graphic of the Graph Jframe, the id of the node, the Stroke of the edges, a pointer for graph display
+ * and the selected color.
+ */
 public class ColorChooseModeDrawEdges extends Thread{
     DirectedWeightedGraph graph;
     int id;
@@ -27,7 +32,7 @@ public class ColorChooseModeDrawEdges extends Thread{
 
     /**
      * Credit for the arrow creating function to https://gist.github.com/raydac/df97493f58b0521fb20a
-     *
+     *This function draw an arrow by given coordinates, stroke, arrow size.
      * @param gfx
      * @param start
      * @param end
@@ -114,6 +119,10 @@ public class ColorChooseModeDrawEdges extends Thread{
             drawArrow(g2d, new Point2D.Double(Csrc[0], Csrc[1]), new Point2D.Double(Cdest[0], Cdest[1]), graphDisplay.Estroke, graphDisplay.Estroke,(float)(10));
         }
     }
+
+    /**
+     * This function run the thread
+     */
     @Override
     public void run(){
         drawMyEdges(g);

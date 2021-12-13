@@ -55,6 +55,10 @@ Class Point3D implements GeoLocation{
 -x: double
 -y: double
 -z: double
++ORIGIN: Point3D
++X: Point3D
++Y: Point3D
++Z: Point3D
 +x(): double
 +y(): double
 +z(): double
@@ -76,6 +80,7 @@ class Node implements NodeData{
 +getLocation(): GeoLocation
 +setLocation(GeoLocation): void
 +getWeight(): double
++setKey(int): NodeData
 +setWeight(double): void
 +getInfo(): String
 +setInfo(String): void
@@ -84,6 +89,7 @@ class Node implements NodeData{
 +toString(): String
 +equals(Object): boolean
 +hashCode(): int
++compareTo(Node): int
 }
 class Edge implements EdgeData{
 -src: int
@@ -97,17 +103,22 @@ class Edge implements EdgeData{
 +getInfo(): String
 +setInfo(String): void
 +getTag(): int
++setSrc(int): void
++setDest(int): void
++setWeight(double): EdgeData
 +setTag(int): void
 +toString(): String
 +equals(Object): boolean
 +hashCode(): int
++compareTo(Edge): int
 }
 class DWGraph implements DirectedWeightedGraph{
 -nodes: HashMap<Integer, NodeData>
--edges: HashMap<Integer, HashMap<Integer, EdgeData>>
--nodecount: int
--edgecount: int
--modecount: int
+-outEdges: HashMap<Integer, HashMap<Integer, EdgeData>>
+-inEdges: HashMap<Integer, HashSet<Integer>>
+-nodeCounter: int
+-edgeCounter: int
+-modeCounter: int
 +getNode(int): NodeData
 +getEdge(int, int): EdgeData
 +addNode(NodeData): void
@@ -117,64 +128,65 @@ class DWGraph implements DirectedWeightedGraph{
 +nodeSize(): int
 +edgeSize(): int
 +getMC(): int
--nodeEquals(Iterator<NodeData>): boolean
--edgeEquals(Iterator<EdgeData>): boolean
+-nodesMapEquals(HashMap<Integer, NodeData>): boolean
+-outEdgeMapEquals(HashMap<Integer, HashMap<Integer, EdgeData>>): boolean
+-inEdgeMapEquals(HashMap<Integer, HashMap<Integer, EdgeData>>): boolean
 +toString(): String
 +equals(Object): boolean
 +hashCode(): int
-+getNodes(): HashMap<Iterator, NodeData>
-+getEdges(): HashMap<Integer, HashMa<Integer, EdgeData>>
 __ nodeIter(): Iterator<NodeData> __
 -it: Iterator<NodeData>
-+startModeCounter: int
--n: Node
+-mode: int
+-next: NodeData
 +hasNext(): boolean
 +next(): NodeData
 +remove(): void
 +forEachRemaining(Consumer<? super NodeData): void
 __ edgeIter(): Iterator<EdgeData> __
--it: Iterator<HashMap<Integer,EdgeData>>
--edge: Iterator<EdgeData>
-+startModeCounter: int
--e: Edge
--edgecount: int
+-outerIt: Iterator<HashMap<Integer,EdgeData>>
+-innerIt: Iterator<EdgeData>
++mode: int
+-next: EdgeData
 +hasNext(): boolean
 +next(): EdgeData
 +remove(): void
 +forEachRemaining(Consumer<? super EdgeData): void
 __ edgeIter(int): Iterator<EdgeData> __
 -it: Iterator<EdgeData>
-+startModeCounter: int
--e: Edge
+-mode: int
+-next: EdgeData
++hasNext(): boolean
++next(): EdgeData
++remove(): void
++forEachRemaining(Consumer<? super EdgeData): void
+__ inEdgeIter(int): Iterator<EdgeData> __
+-it: Iterator<Integer>
+-mode: int
+-next: EdgeData
 +hasNext(): boolean
 +next(): EdgeData
 +remove(): void
 +forEachRemaining(Consumer<? super EdgeData): void
 }
 class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms{
-+graph: DirectedWeightedGraph
--connectedComponentsTracker: ChangeTracker<HashMap<Integer, Integer>>
+-graph: DirectedWeightedGraph
+-isConnectedTracker: ChangeTracker<boolean>
 +init(DirectedWeightedGraph): void
 +getGraph(): DirectedWeightedGraph
 +copy(): DirectedWeightedGraph
 +isConnected(): boolean
--isConnected(NodeData, int[], HashMap<Integer, IsConnectedProps>, Stack<NodeData>, HashMap<Integer, Integer>
--stronglyConnectedComponents(): HashMap<Integer, Integer>
+-transpose(): DirectedWeightedGraph
+-DFS(NodeData, DirectedWeightedGraph): void
 +shortestPathDist(int, int): double
 +shortestPath(int, int): List<NodeData>
 +center(): NodeData
-+LongestPath(NodeData): double
 +tsp(List<NodeData>): List<NodeData>
 +save(String): boolean
 +load(String): boolean
-+DFS(NodeData, Consumer<NodeData>): void
-+DFS(NodeData): void
-}
-IsConnectedProps --> DWGraphAlgorithms: inner class
-class IsConnectedProps{
-+index: int
-+lowlink: int
-+onstack: boolean
+-Dijkstra(int): HashMap<Integer, Double>
+-DijkstraPaths(int): HashMap<Integer, LinkedList<Integer>>
+-distanceFromPaths(HashMap<Integer, LinkedList<Integer>>): HashMap<Integer, Double>
+-getPath(HashMap<Integer, Integer>, int): HashMap<Integer, LinkedList<Integer>>
 }
 class ChangeTracker{
 -data: T
@@ -182,5 +194,155 @@ class ChangeTracker{
 +setData(T, int): void
 +getData(): T
 +wasChanged(int): boolean
+}
+class EdgeAdapter{
+-src: int
+-w: double
+-dest: int
++getSrc(): int
++getW(): double
++getDest(): int
++compareTo(EdgeAdapter): int
++toString(): String
++serialize(EdgeData, Type, JsonSerializationContext): JsonElement
++deserialize(JsonElement, Type, JsonDeserializationContext): EdgeData
+}
+
+class NodeAdapter{
+-id: int
+-pos: String
++getid(): int
++getPos(): String
++setPos(String): void
++setPos(GeoLocation): void
++setId(int): void
++compareTo(NodeAdapter): int
++toString(): String
++serialize(NodeData, Type, JsonSerializationContext): JsonElement
++deserialize(JsonElement, Type, JsonDeserializationContext): NodeData
+}
+
+class GraphAdapter{
++Edges: List<EdgeData>
++Nodes: List<NodeData>
++getEdges(): List<EdgeData>
++setEdges(List<EdgeData>): void
++getNodes(): List<NodeData
++addEdge(EdgeData): void
++addNode(NodeData): void
++setNodes(List<NodeData>): void
++fromGraph(DirectedWeightedGraph): GraphAdapter
++toGraph(GraphAdapter): DirectedWeightedGraph
+}
+
+class Graph{
++mb: GMenuBar
++graphalgo: DirectedWeightedGraphAlgorithms
++g: DirectedWeightedGraph
++gd: GraphDisplay
++keyPressed(KeyEvent): void
+}
+
+class Help{
++helpFrame: JFrame
+}
+
+class AddEdge{
++mb: GMenuBar
+-addedgeframe: JFrame
++actionPerformed(ActionEvent): void
+}
+
+class AddNode{
++mb: GMenuBar
+-addnodeframe: JFrame
++actionPerformed(ActionEvent): void
+}
+
+class RemoveEdge{
++mb: GMenuBar
+-removeEdgeframe: JFrame
++actionPerformed(ActionEvent): void
+}
+
+class RemoveNode{
++mb: GMenuBar
+-nrframe: JFrame
++actionPerformed(ActionEvent): void
+}
+
+class ColorRandomizer{
++r: Random
++g: Random
++b: Random
++getRandomColor(): int[]
+}
+
+class ColorChooseModeDrawEdges{
++id: int
++g: Graphics
++graph: DirectedWeightedGraph
++graphDisplay: GraphDisplay
++color: Color
++drawArrow(Graphics2D, Point2D, Point2D, Stroke, Stroke, float): void
++CoordinatesTransformation(GeoLocation): double[]
++drawMyEdges(Graphics): void
++run(): void
+}
+
+class DrawMyEdgesThread{
++id: int
++g: Graphics
++graph: DirectedWeightedGraph
++graphDisplay: GraphDisplay
++drawArrow(Graphics2D, Point2D, Point2D, Stroke, Stroke, float): void
++CoordinatesTransformation(GeoLocation): double[]
++drawMyEdges(Graphics): void
++run(): void
+}
+
+class GMenuBar{
++graph: DirectedWeightedGraphAlgorithms
++gd: GraphDisplay
++gr: Graph
++actionPerformed(ActionEvent): void
++tspInputTranslator(): LinkedList<NodeData>
+}
+
+class GraphDisplay{
++graphAlgorithms: DirectedWeightedGraphAlgorithms
++graph: DirectedWeightedGraph
++drawArrow(Graphics2D, Point2D, Point2D, Stroke, Stroke, float): void
++CoordinatesTransformation(GeoLocation): double[]
++CoordinatesTransformation(Point2D): double[]
++SetBoundingBox(): void
++DrawNodesColorSelection(Graphics): void
++DrawNodesRegular(Graphics): void
++DrawNodesSpecial(Graphics): void
++drawEdges(Graphics): void
++paintComponent(Graphics): void
++paint(Graphics): void
++Update(DirectedWeightedGraphAlgorithms): void
++mousePressed(MouseEvent): void
++mouseReleased(MouseEvent): void
++mouseDragged(MouseEvent): void
++mouseWheelMoved(MouseWheelEvent): void
++setCenterid(int): void
++MarkCheckSP(int, int): boolean
++CreateMarkedEdgesSP(ArrayList<NodeData>): void
++MarkCheckTSP(int, int): boolean
++CreateMarkedEdgesTSP(LinkedList<NodeData>): void
++resetGraphDisplay(): void
++setLightMode(): void
++setColorMode(Color c): void
++setColorFrenzyMode(): void
++setAlgoMode(): void
++resetAlgo(): void
+}
+
+class Ex2{
++getGrapg(String): DirectedWeightedGraph
++getGrapgAlgo(String): DirectedWeightedGraphAlgorithms
++runGUI(String): void
 }
 @enduml

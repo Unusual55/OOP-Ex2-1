@@ -4,6 +4,10 @@ import api.GeoLocation;
 
 import java.util.Objects;
 
+/**
+ * This class represent a coordinates as location in 3D space
+ * It has 3 fields: x,y,z which represent component in coordinate vector (x,y,z)
+ */
 public class Point3D implements GeoLocation {
     
     public static final GeoLocation ORIGIN = new Point3D(0.0, 0.0, 0.0);
@@ -146,12 +150,21 @@ public class Point3D implements GeoLocation {
     public double distance(GeoLocation g) {
         return Math.sqrt(Math.pow(this.x - g.x(), 2) + Math.pow(this.y - g.y(), 2) + Math.pow(this.z - g.z(), 2));
     }
-    
+
+    /**
+     * This function return a string which represent this 3D point
+     * @return String that represent this 3D point
+     */
     @Override
     public String toString() {
         return this.x + ", " + this.y + ", " + this.z;
     }
-    
+
+    /**
+     * This function get another Point3D Object and check if their properties are equal.
+     * @param o the object we compare this object to
+     * @return True if they are equal, otherwise false
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
@@ -162,7 +175,6 @@ public class Point3D implements GeoLocation {
     
     /**
      * Since we have overridden equals we also are required to override hashCode
-     *
      * @return the hashcode of the object
      */
     @Override

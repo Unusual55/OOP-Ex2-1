@@ -3,6 +3,10 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * This Panel introduce out GUI to the user in order to inform him about the functionality and the special
+ * features of the GUI, and of course to let him know that he can open it whenever he want by click on 'h'.
+ */
 public class Help extends JPanel {
     JFrame helpframe=new JFrame("Help");
     Help(){
@@ -29,8 +33,10 @@ public class Help extends JPanel {
         +"file so you can load it later. The basic graph edit options are availble in the Edit menu, you can add or remove nodes "
         +"and edges from the graph, and you can even zoom in and out the screen in order to see the graph better. "
         +"In the Algorithms menu you can find every algorithm you can run on the graph, just click on the algorithm you want. "
-        +"Before you go, we want you to know that in order to enjoy the visualisation the most, during the visualisation "
-        +"the menu will disappear, just click on the upper left corner in screen and it will show itself. Have Fun");
+        +"Before you go, we want you to know that you can zoom in and out using the up and down arrows as well. "
+        +"There are 3 modes in this Gui: Light Mode which is the classic mode with black nodes and edges, "
+                +"Color Selection Mode, which allow you to choose the color of the Graph, and the most special "
+                +"one, which is the Color Frenzy, which paint the nodes and edges with random colors. Have Fun");
         info.setBounds(5,110, 350, 200);
         info.setLineWrap(true);
         info.setWrapStyleWord(true);
@@ -56,6 +62,5 @@ public class Help extends JPanel {
         c.add(info);
         c.add(again);
         helpframe.setVisible(true);
-
     }
 }
