@@ -138,6 +138,7 @@ From the map we can see the graph contains the following edges:
 * from 4 to 5
 
 ## DWGraphAlgorithms
+
 DWGraphAlgorithms object implements DirectedWeightedGraphAlgorithms interface.
 This object handle the algorithm we need to run on our DWGraph.
 This object contains a DirectedWeightedGraph object, which we use our DwGraph in order to implement it.
