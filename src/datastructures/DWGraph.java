@@ -8,6 +8,15 @@ import api.DirectedWeightedGraph;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * This class represent graph data structure- G=(V,E) G- graph object, V- vertices, E- edges
+ * The properties of graph are HashMap which contain the Nodes, HashMap which contain the edges,
+ * counter of nodes, counter of edges and counter of changes in the graph.
+ * We modeled the graph with HashMaps in order to reduce the time complexity of the basic edit function like
+ * add or remove, we used HashSet of integers in order to keep the id of the nodes that have edges in order to
+ * keep the id of the neighbors easily and without keeping any duplicates of the edges, that way we reduced
+ * the time and space complexity.
+ */
 public class DWGraph implements DirectedWeightedGraph {
     
     
@@ -364,7 +373,14 @@ public class DWGraph implements DirectedWeightedGraph {
             }
         };
     }
-    
+
+    /**
+     * This method returns an Iterator for edges getting out of the given node (all the edges starting (source) at the given node).
+     * Note: if the graph was changed since the iterator was constructed - a RuntimeException should be thrown.
+     *
+     * @param node_id
+     * @return Iterator<EdgeData>
+     */
     public Iterator<EdgeData> inEdgeIter(int node_id) {
         return new Iterator<>() {
             private int mode = DWGraph.this.modeCounter;
@@ -453,8 +469,11 @@ public class DWGraph implements DirectedWeightedGraph {
     }
     
     //endregion
-    
-    
+
+    /**
+     * This function returns a string representation of this object
+     * @return String that represent this object
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -481,7 +500,12 @@ public class DWGraph implements DirectedWeightedGraph {
         
         return sb.toString();
     }
-    
+
+    /**
+     * This function get a object as input and compare it to this object
+     * @param o The object which we compare to this object
+     * @return True if they are equal, otherwise false
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -494,7 +518,12 @@ public class DWGraph implements DirectedWeightedGraph {
                 this.outEdgesMapEqual(g.outEdges) &&
                 this.inEdgesMapEqual(g.inEdges);
     }
-    
+
+    /**
+     * This function compare between two HashMaps of Nodes
+     * @param other HashMap of Nodes
+     * @return True if they are equal, otherwise false
+     */
     private boolean nodesMapEqual(HashMap<Integer, NodeData> other) {
         if (this.nodes == other) return true;
         if (this.nodes.size() != other.size()) return false;
@@ -508,7 +537,12 @@ public class DWGraph implements DirectedWeightedGraph {
         }
         return true;
     }
-    
+
+    /**
+     * This function compare between two HashMaps of Edges
+     * @param other HashMap of edges
+     * @return True if they are equal, otherwise false
+     */
     private boolean outEdgesMapEqual(HashMap<Integer, HashMap<Integer, EdgeData>> other) {
         if (this.outEdges == other) return true;
         if (!this.outEdges.keySet().equals(other.keySet())) return false;
@@ -528,7 +562,12 @@ public class DWGraph implements DirectedWeightedGraph {
         }
         return true;
     }
-    
+
+    /**
+     * This function compare between two HashMaps of Edges
+     * @param other HashMap of edges
+     * @return True if they are equal, otherwise false
+     */
     private boolean inEdgesMapEqual(HashMap<Integer, HashSet<Integer>> other) {
         if (this.inEdges == other) return true;
         if (!this.inEdges.keySet().equals(other.keySet())) return false;
@@ -542,7 +581,11 @@ public class DWGraph implements DirectedWeightedGraph {
         }
         return true;
     }
-    
+
+    /**
+     * Since we have overridden equals we also are required to override hashCode
+     * @return the hashcode of the object
+     */
     @Override
     public int hashCode() {
         return Objects.hash(this.nodes, this.outEdges, this.inEdges, this.nodeSize(), this.edgeSize(), this.getMC());

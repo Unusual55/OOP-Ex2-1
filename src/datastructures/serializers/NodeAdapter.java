@@ -7,7 +7,10 @@ import datastructures.Node;
 import datastructures.Point3D;
 
 import java.lang.reflect.Type;
-
+/**
+ * This class is the adapter that support us to load the nodes from .json files and save the nodes to the wanted
+ * format to .json file.
+ */
 public class NodeAdapter implements Comparable<NodeAdapter>, JsonSerializer<NodeData>, JsonDeserializer<NodeData> {
     private String pos;
     private int id;
@@ -26,38 +29,73 @@ public class NodeAdapter implements Comparable<NodeAdapter>, JsonSerializer<Node
         this.pos = pos.x() + "," + pos.y() + "," + pos.z();
         this.id = id;
     }
-    
+
+    /**
+     * This function return a string representation of the position of the node
+     * @return
+     */
     public String getPos() {
         return this.pos;
     }
-    
+
+    /**
+     * This function return the id of the node
+     * @return
+     */
     public int getId() {
         return this.id;
     }
-    
+
+    /**
+     * This function get a String that represent a new position of the node, and assign it as the new position
+     * @param pos
+     */
     public void setPos(String pos) {
         this.pos = pos;
     }
-    
+
+    /**
+     * This function get an object that implements GeoLocation and assign it as the new position of the node
+     * @param pos
+     */
     public void setPos(GeoLocation pos) {
         this.pos = pos.x() + "," + pos.y() + "," + pos.z();
     }
-    
+
+    /**
+     * This function get an id number and assign it as the new id of the node
+     * @param id
+     */
     public void setId(int id) {
         this.id = id;
     }
-    
-    
+
+    /**
+     * This function compare between two NodeAdapter objects
+     * @param o
+     * @return
+     */
     @Override
     public int compareTo(NodeAdapter o) {
         return this.id - o.id;
     }
-    
+
+    /**
+     * This function return a string representation of the node
+     * @return
+     */
     @Override
     public String toString() {
         return "{ \"pos\": \"" + this.pos + "\", \"id\": " + this.id + " }";
     }
-    
+
+    /**
+     * This function serialize the node into the proper format of the .json file
+     * @param nodeData
+     * @param type
+     * @param jsonSerializationContext
+     * @return
+     */
     @Override
     public JsonElement serialize(NodeData nodeData, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
@@ -66,7 +104,15 @@ public class NodeAdapter implements Comparable<NodeAdapter>, JsonSerializer<Node
         obj.addProperty("id", nodeData.getKey());
         return obj;
     }
-    
+
+    /**
+     * This function deserialize the .json file into an object that implement the NodeData interface
+     * @param jsonElement
+     * @param type
+     * @param jsonDeserializationContext
+     * @return
+     * @throws JsonParseException
+     */
     @Override
     public NodeData deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();

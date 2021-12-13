@@ -84,7 +84,6 @@ public class AddEdge extends JPanel implements ActionListener {
                 g.connect(src, dest, w);
                 gmb.graph.init(gmb.graph.getGraph());
                 gmb.gd.Update(gmb.graph);
-//                gmb.gd.paint(gmb.gr.getGraphics());
                 this.gmb.gd.repaint();
                 addedgeframe.dispose();
             } catch (NumberFormatException ex) {

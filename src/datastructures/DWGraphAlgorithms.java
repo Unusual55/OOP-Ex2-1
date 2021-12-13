@@ -17,7 +17,11 @@ import datastructures.serializers.EdgeAdapter;
 import datastructures.serializers.GraphAdapter;
 import datastructures.serializers.NodeAdapter;
 
-
+/**
+ * This class is the class where we run the algorithm on the graph.
+ * This class hold a DWGraph that implement the DirectedWeightedGraph object so we will run the algorithms
+ * on this graph.
+ */
 public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
     
     
@@ -108,7 +112,14 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         this.isConnectedTracker.setData(true, this.graph.getMC());
         return true;
     }
-    
+
+    /**
+     * This function run a DFS on the graph
+     * https://en.wikipedia.org/wiki/Graph_traversal#Depth-first_search
+     * https://en.wikipedia.org/wiki/Depth-first_search
+     * @param v
+     * @param g
+     */
     private void DFS(NodeData v, DirectedWeightedGraph g) {
         Stack<NodeData> S = new Stack<>();
         S.push(v);
@@ -129,7 +140,12 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
             }
         }
     }
-    
+
+    /**
+     * This function create a transpose graph from this graph: in the regular graph every edge (u,v) will
+     * become (v,u) in the transposed graph
+     * @return The transposed graph
+     */
     private DirectedWeightedGraph transpose() {
         DirectedWeightedGraph t = new DWGraph();
         Iterator<NodeData> it = this.graph.nodeIter();
@@ -333,9 +349,6 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
      * @return Map from node id to distance of the shortest path
      */
     private HashMap<Integer, Double> Dijkstra(int src) {
-//        if (!this.shortestDistanceTracker.wasChanged(this.graph.getMC())) {
-//            return this.shortestDistanceTracker.getData();
-//        }
         HashMap<Integer, Double> distances = new HashMap<>();
         Iterator<NodeData> it = this.graph.nodeIter();
         while (it.hasNext()) {
@@ -349,7 +362,6 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         
         while (settled.size() != this.graph.nodeSize()) {
             if (pq.isEmpty()) {
-//                this.shortestDistanceTracker.setData(distances, this.graph.getMC());
                 return distances;
             }
             int u = pq.remove().getKey();
@@ -375,7 +387,6 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
                 }
             }
         }
-//        this.shortestDistanceTracker.setData(distances, this.graph.getMC());
         return distances;
     }
     
@@ -437,10 +448,14 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
             }
         }
         paths = this.getPath(parentNode, src);
-//        this.shortestDistanceTracker.setData(distances, this.graph.getMC());
         return paths;
     }
-    
+
+    /**
+     *This function return a HashMap of HashMap that represents the shortest distance form a source to destenation
+     * @param paths
+     * @return
+     */
     private HashMap<Integer, Double> distancesFromPaths(HashMap<Integer, LinkedList<Integer>> paths) {
         HashMap<Integer, Double> distances = new HashMap<>();
         for (int key : paths.keySet()) {
@@ -453,7 +468,14 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
         }
         return distances;
     }
-    
+
+    /**
+     * This function return a HashMap of LinkedList that represent the path of every shortest path from
+     * source node to any other vertex.
+     * @param parentNode
+     * @param src
+     * @return
+     */
     private HashMap<Integer, LinkedList<Integer>> getPath(HashMap<Integer, Integer> parentNode, int src) {
         HashMap<Integer, LinkedList<Integer>> path = new HashMap<>();
         Iterator<NodeData> it = this.graph.nodeIter();

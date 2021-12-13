@@ -10,6 +10,12 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
+
+/**
+ * This class is a thread that draw the edges of specific node with random colors. It gets a pointer to the
+ * graph, a Graphic of the Graph Jframe, the id of the node, the Stroke of the edges, a pointer for graph display.
+ */
+
 public class DrawMyEdgesThread extends Thread{
     DirectedWeightedGraph graph;
     int id;
@@ -25,7 +31,7 @@ public class DrawMyEdgesThread extends Thread{
 
     /**
      * Credit for the arrow creating function to https://gist.github.com/raydac/df97493f58b0521fb20a
-     *
+     *This function draw an arrow by given coordinates, stroke, arrow size.
      * @param gfx
      * @param start
      * @param end
@@ -91,8 +97,8 @@ public class DrawMyEdgesThread extends Thread{
         return new double[]{xfixed, yfixed};
     }
     /**
-     * This function draw the nodes. As we mentioned earlier, we consider special cases of edges that we want
-     * to mark if we used specific algorithm.
+     * This function draw the nodes. As we mentioned earlier, we don't consider algorithm since this mode doesn't
+     * support algorithms.
      * @param graphics
      */
     public void drawMyEdges(Graphics graphics) {

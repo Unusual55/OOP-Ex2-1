@@ -49,14 +49,23 @@ public class Graph extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        /**
+         * If the user clicked on 'h', the help panel will open
+         */
         if(e.getKeyChar()=='h'){
             new Help();
         }
-        else if(e.getKeyCode()==KeyEvent.VK_UP){
+        /**
+         * If the user clicked on Up Arrow and there are more than one node, it will zoom into the graph
+         */
+        else if(e.getKeyCode()==KeyEvent.VK_UP&&this.g.nodeSize()>0){
             this.gd.Scale+=0.005;
             repaint();
         }
-        else if(e.getKeyCode()==40){
+        /**
+         * If the user clicked on Down Arrow and there are more than one node, it will zoom out of the graph.
+         */
+        else if(e.getKeyCode()==40&&this.g.nodeSize()>0){
             this.gd.Scale-=0.005;
             repaint();
         }
