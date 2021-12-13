@@ -245,7 +245,16 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         this.WNode=3;
         this.Hedge=5;
         this.Wedge=5;
-        ExecutorService pool= Executors.newFixedThreadPool(100);
+        int V = this.graph.nodeSize();
+        int E = this.graph.edgeSize();
+        int numOfCores = Runtime.getRuntime().availableProcessors();
+        double waitingTime = (V + E*(E-1));
+        double serviceTime = (V + E);
+        double blockingRatio = waitingTime / serviceTime;
+        double target_cpu_util = 0.5; // target utilization [0, 1] - 1 - means thread pull will keep the processors fully utilized
+        int numberOfThreads = (int)Math.floor(numOfCores * target_cpu_util * (1 + blockingRatio));
+        numberOfThreads = Math.max(1, Math.min(numberOfThreads, Math.min(V-1, E-1)));
+        ExecutorService pool= Executors.newFixedThreadPool(numberOfThreads);
         while (nodeiter.hasNext()) {
             curr = nodeiter.next();
             int id=curr.getKey();
@@ -287,7 +296,16 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         this.Wedge=5;
         Stroke es=new BasicStroke((float)(3+this.Scale/100));
         g2d.setStroke(this.Estroke);
-        ExecutorService pool= Executors.newFixedThreadPool(100);
+        int V = this.graph.nodeSize();
+        int E = this.graph.edgeSize();
+        int numOfCores = Runtime.getRuntime().availableProcessors();
+        double waitingTime = (V + E*(E-1));
+        double serviceTime = (V + E);
+        double blockingRatio = waitingTime / serviceTime;
+        double target_cpu_util = 0.5; // target utilization [0, 1] - 1 - means thread pull will keep the processors fully utilized
+        int numberOfThreads = (int)Math.floor(numOfCores * target_cpu_util * (1 + blockingRatio));
+        numberOfThreads = Math.max(1, Math.min(numberOfThreads, Math.min(V-1, E-1)));
+        ExecutorService pool= Executors.newFixedThreadPool(numberOfThreads);
         while (nodeiter.hasNext()) {
             curr = nodeiter.next();
             int id=curr.getKey();
