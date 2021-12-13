@@ -235,7 +235,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
      */
     public void DrawNodesColorSelection(Graphics graphics) {
         Graphics2D g2d = (Graphics2D) graphics;
-        g2d.setColor(this.Ncolor);
+        g2d.setColor(this.selectedColor);
         Iterator<NodeData> nodeiter = this.graph.nodeIter();
         HashMap<Integer, ColorChooseModeDrawEdges> drawedges=new HashMap<>();
         NodeData curr = null;
@@ -245,7 +245,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         this.WNode=3;
         this.Hedge=5;
         this.Wedge=5;
-        ExecutorService pool= Executors.newFixedThreadPool(100);
+        ExecutorService pool= Executors.newFixedThreadPool(1);
         while (nodeiter.hasNext()) {
             curr = nodeiter.next();
             int id=curr.getKey();
@@ -287,7 +287,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         this.Wedge=5;
         Stroke es=new BasicStroke((float)(3+this.Scale/100));
         g2d.setStroke(this.Estroke);
-        ExecutorService pool= Executors.newFixedThreadPool(100);
+        ExecutorService pool= Executors.newFixedThreadPool(1);
         while (nodeiter.hasNext()) {
             curr = nodeiter.next();
             int id=curr.getKey();

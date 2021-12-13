@@ -173,11 +173,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
             this.fileChooser.showOpenDialog(null);
             if (this.fileChooser.getSelectedFile() == null) {
                 return;
-            } else {
+            } else {//reset the current GraphDisplay and then set the loaded graph as it's graph
                 this.gd.resetGraphDisplay();
                 this.graph.load(this.fileChooser.getSelectedFile().getPath());
                 this.gd.Update(this.graph);
-//                this.gd.paint(this.gr.getGraphics());
                 this.gd.repaint();
             }
         }
@@ -213,12 +212,20 @@ public class GMenuBar extends JMenuBar implements ActionListener {
              */
         } else if (e.getSource() == removeedge) {
             rep = new RemoveEdge(this);
+            /**
+             * If the user clicked on center, the function will open a dialog that contain the id of the center
+             * and then repaint the graph in order to mark the center node
+             */
         } else if (e.getSource() == center) {
             NodeData n=this.graph.center();
             JOptionPane.showMessageDialog(this, "The center node id is: "+n.getKey());
             this.gd.setCenterid(n.getKey());
             this.gd.setAlgoMode();
             this.gd.repaint();
+            /**
+             * If the user clicked on Shortest path distance, the function will open a dialog that contain the
+             * distance of the shortest path between the two nodes
+             */
         } else if (e.getSource() == shortdist) {
             int src = -1, dest = -1;
             String srcop = JOptionPane.showInputDialog(this, " Enter an source");
@@ -236,6 +243,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, "One or both of the inputs doesn't exist in the graph");
             }
+            /**
+             * If the user clicked on Shortest path, the function will repaint the graph in order to mark the
+             * nodes and the edges in the shortest path between the two nodes
+             */
         } else if (e.getSource() == shortpath) {
             int src = -1, dest = -1;
             String srcop = JOptionPane.showInputDialog(this, " Enter an source");
@@ -255,6 +266,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, "One or both of the inputs doesn't exist in the graph");
             }
+            /**
+             * If the user clicked on is connected, the function will open a dialog that contain the answer if
+             * the graph is connected of not connected
+             */
         } else if (e.getSource() == iscon) {
             if(this.graph.isConnected()){
                 JOptionPane.showMessageDialog(this, "The graph is connected");
@@ -262,6 +277,12 @@ public class GMenuBar extends JMenuBar implements ActionListener {
             else{
                 JOptionPane.showMessageDialog(this, "The graph is not connected");
             }
+            /**
+             *If the user clicked on tsp, the function will get the inputs from the user, and create a valid
+             * list of NodeData that we will send to the TSP function, which will return a list of NodeData
+             * that represent the path, we will send it to a function in the graph display in order to prepare
+             * it for visualising the path and then repaint the graph.
+             */
         } else if (e.getSource() == tsp) {
             LinkedList<NodeData> sendtoTSP = tspInputTraslator();
             LinkedList<NodeData> outtsplist= (LinkedList<NodeData>) this.graph.tsp(sendtoTSP);
@@ -273,6 +294,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
             } else {
             }
         }
+        /**
+         * If the user clicked on zoom in and entered a valid value, we will increase the scale in the
+         * GraphDisplay and then repaint the graph
+         */
         else if(e.getSource()==zoomin){
             try{
                 String input=JOptionPane.showInputDialog("Enter how much you want to zoom in.");
@@ -293,6 +318,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                 JOptionPane.showMessageDialog(this, "The input you enterd is not a valid Integer");
             }
         }
+        /**
+         * If the user clicked on Zoom Out, and entered a valid value, the function will decrease the scale of
+         * the GraphDisplay and then repaint the graph
+         */
         else if(e.getSource()==zoomout){
             try{
                 String input=JOptionPane.showInputDialog("Enter how much you want to zoom in.");
@@ -312,21 +341,36 @@ public class GMenuBar extends JMenuBar implements ActionListener {
                 JOptionPane.showMessageDialog(this, "The input you enterd is not a valid Integer");
             }
         }
+        /**
+         * If the user clicked on help, the function will open the help panel
+         */
         else if(e.getSource()==gethelp){
             Help h=new Help();
         }
 //        else if(e.getSource()==resetalgo){
 //            this.gd.setRegularFlag();
 //        }
+        /**
+         * If the user clicked on Light Mode the function will set the Set the Mode of the GraphDisplay
+         * to LightMode
+         */
         else if(e.getSource()==lightmode){
             this.gd.setLightMode();
             this.gd.repaint();
         }
+        /**
+         * If the user clicked on Color Mode, the function will open a JColorChoose, and repaint the graph
+         * with the selected color
+         */
         else if(e.getSource()==colormode){
             Color c=JColorChooser.showDialog(this, "Select color for the node and edges",Color.black);
             this.gd.setColorMode(c);
             this.gd.repaint();
         }
+        /**
+         * If the user clicked on Color Frenzy, the function will set the mode to Color Frenzy, which will
+         * paint the graph with random colors
+         */
         else if(e.getSource()==colorfrenzy){
             this.gd.setColorFrenzyMode();
             this.gd.repaint();
