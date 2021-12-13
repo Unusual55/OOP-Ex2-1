@@ -171,16 +171,16 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         return new double[]{xfixed, yfixed};
     }
 
-    public double[] CoordinatesTransformation(Point2D p) {
-        double dpx = this.BoundingBox[2] - this.BoundingBox[0];
-        double dpy = this.BoundingBox[3] - this.BoundingBox[1];
-        double dcx = this.BoundingBox[2] - p.getX();
-        double dcy = this.BoundingBox[3] - p.getY();
-        double xfixed=(dcx/dpx*this.width+this.height+mousep.getX())*this.Scale;
-        double yfixed=(dcy/dpy*this.width+this.height+mousep.getY())*this.Scale;
-        System.out.println(xfixed+ ", " + yfixed);
-        return new double[]{xfixed, yfixed};
-    }
+//    public double[] CoordinatesTransformation(Point2D p) {
+//        double dpx = this.BoundingBox[2] - this.BoundingBox[0];
+//        double dpy = this.BoundingBox[3] - this.BoundingBox[1];
+//        double dcx = this.BoundingBox[2] - p.getX();
+//        double dcy = this.BoundingBox[3] - p.getY();
+//        double xfixed=(dcx/dpx*this.width+this.height+mousep.getX())*this.Scale;
+//        double yfixed=(dcy/dpy*this.width+this.height+mousep.getY())*this.Scale;
+//        System.out.println(xfixed+ ", " + yfixed);
+//        return new double[]{xfixed, yfixed};
+//    }
 
     /**
      * This function create a bounding box using the iterators.
@@ -229,8 +229,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
     }
 
     /**
-     * This function draw the nodes. As we mentioned earlier, we consider special cases of nodes that we want
-     * to mark if we used specific algorithm.
+     * This function draw the graph in Color Selection Mode.
      * @param graphics
      */
     public void DrawNodesColorSelection(Graphics graphics) {
@@ -269,8 +268,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         }
     }
     /**
-     * This function draw the nodes. As we mentioned earlier, we consider special cases of nodes that we want
-     * to mark if we used specific algorithm.
+     * This function draw the Graph in the Color Frenzy Mode, this mode doesn't support the algorithms.
      * @param graphics
      */
     public void DrawNodesRegular(Graphics graphics) {
@@ -309,6 +307,11 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         }
     }
 
+    /**
+     * This function draw the special node that we want to mark in order to visualise the results of the
+     * algorithms, such as the center node, the node in the shortest path of the nodes in the path in the tsp
+     * @param graphics
+     */
     public void DrawNodesSpecial(Graphics graphics) {
         Graphics2D g2d = (Graphics2D) graphics;
         g2d.setStroke(this.Nstroke);
@@ -357,8 +360,8 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
 
 
     /**
-     * This function draw the nodes. As we mentioned earlier, we consider special cases of edges that we want
-     * to mark if we used specific algorithm.
+     * This function draw the edges we want to mark in order to visualise the result of an algorithm, special
+     * edges like edges in the shortest path or in the tsp
      * @param graphics
      */
     public void drawEdges(Graphics graphics) {
@@ -479,12 +482,19 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
 
     }
 
+    /**
+     * If a mouse was clicked, the function will update the coordinates of mousenext
+     * @param e
+     */
     @Override
     public void mousePressed(MouseEvent e) {
         mousenext = e.getPoint();
-        System.out.println(e.getPoint().toString());
     }
 
+    /**
+     * If the mouse is released, we will update the previous location of the mouse in mouse thread
+     * @param e
+     */
     @Override
     public void mouseReleased(MouseEvent e) {
         mouseprev = (Point2D) mousep.clone();
@@ -613,12 +623,12 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
             curr = next;
         }
     }
-
-    public Point2D GeoLocationToPoint2D(GeoLocation p){
-        double x2d=this.getWidth()/2 +p.y();
-        double y2d=this.getHeight()/2+p.z();
-        return new Point2D.Double(x2d, y2d);
-    }
+//
+//    public Point2D GeoLocationToPoint2D(GeoLocation p){
+//        double x2d=this.getWidth()/2 +p.y();
+//        double y2d=this.getHeight()/2+p.z();
+//        return new Point2D.Double(x2d, y2d);
+//    }
 //    public void setAlgorithmFlag(){
 //        drawflags[0]=false;
 //        drawflags[1]=true;
@@ -627,6 +637,11 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
 //        drawflags[0]=true;
 //        drawflags[1]=false;
 //    }
+
+    /**
+     * This function reset the fields in this GraphDisplay in order to reset the fields and the graph without
+     * creating a new GraphDisplay.
+     */
     public void resetGraphDisplay(){
         this.selectedColor=Color.BLACK;
         drawflags= new boolean[]{ true, false,false, false};
@@ -664,6 +679,10 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
             SetBoundingBox();
         }
     }
+
+    /**
+     * This function set the Light Mode on, and turn off the other modes
+     */
     public void setLightMode(){
         if(drawflags[2]||drawflags[3]){
             drawflags[2]=false;drawflags[3]=false;
@@ -672,6 +691,11 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         drawflags[0]=true;
         this.selectedColor=Color.black;
     }
+
+    /**
+     * This function set the Color Selection Mode on, assign a new selected color and turn the other modes off.
+     * @param c
+     */
     public void setColorMode(Color c){
         if(drawflags[1]||drawflags[3]){
             drawflags[0]=false;drawflags[1]=false;
@@ -680,15 +704,27 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         drawflags[2]=true;
         this.selectedColor=c;
     }
+
+    /**
+     * This function turn the Color Frenzy Mode on and turn the other modes off.
+     */
     public void setColorFrenzyMode(){
         drawflags[0]=false;drawflags[1]=false;
         drawflags[2]=false;drawflags[3]=true;
         this.selectedColor=Color.black;
     }
+
+    /**
+     * This function set the Light Mode and the Algorithm Mode on and turn the other modes off
+     */
     public void setAlgoMode(){
         drawflags[0]=true;drawflags[1]=true;
         drawflags[2]=false;drawflags[3]=false;
     }
+
+    /**
+     * This function reset the kept values that we need for the algo
+     */
     public void resetAlgo(){
         this.centerid=-1;
         this.markededgesTSP=new HashMap<>();

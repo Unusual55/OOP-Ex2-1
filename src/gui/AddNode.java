@@ -81,7 +81,6 @@ public class AddNode extends JPanel implements ActionListener {
                 gmb.graph.getGraph().addNode(n);
                 gmb.graph.init(gmb.graph.getGraph());
                 gmb.gd.Update(gmb.graph);
-//                gmb.gd.paint(gmb.gr.getGraphics());
                 this.gmb.gd.repaint();
                 this.addnodeframe.dispose();
             }
