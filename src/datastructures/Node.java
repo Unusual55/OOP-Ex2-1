@@ -5,7 +5,18 @@ import api.NodeData;
 
 import java.util.Comparator;
 import java.util.Objects;
-
+/**
+This function represent a vertex in the graph.
+The properties every Node object contains are:
+1) key: Unique number that change from every node and used as it's id.
+2) position: Location in the 3D space
+3) weight: The weight this node have
+4) info: Information about the node
+5) tag: Integer property that used as color marking while traveling the graph
+    -1) White- Unvisited node which we didn't discover yet
+    0) Gray- Unvisited node which we already discover
+    1) Black- Visited node which we already left
+ */
 public class Node implements NodeData, Comparable<Node> {
     
     private int key;
@@ -180,12 +191,21 @@ public class Node implements NodeData, Comparable<Node> {
     }
     
     //endregion
-    
+
+    /**
+     * This function return a String representation of this object
+     * @return String that represent this object
+     */
     @Override
     public String toString() {
         return "(" + this.key + ")";
     }
-    
+
+    /**
+     * This function get object as an input and check if it's equal to this object
+     * @param o the object we compare this object to
+     * @return True if they are equal, otherwise false
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -197,13 +217,21 @@ public class Node implements NodeData, Comparable<Node> {
                 this.info.equals(n.getInfo()) &&
                 this.tag == n.getTag();
     }
-    
+
+    /**
+     * Since we have overridden equals we also are required to override hashCode
+     * @return the hashcode of the object
+     */
     @Override
     public int hashCode() {
         return Objects.hash(this.key, this.weight, this.location, this.info, this.tag);
     }
-    
-    
+
+    /**
+     * This function compare between two Nodes
+     * @param o Node object we compare to this object
+     * @return the result of the comparison
+     */
     @Override
     public int compareTo(Node o) {
         return Double.compare(this.getWeight(), o.getWeight());

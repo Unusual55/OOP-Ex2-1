@@ -5,6 +5,15 @@ import api.GeoLocation;
 
 import java.util.Objects;
 
+/**
+ * This class represent an edge in the graph.
+ * The properties of every edge are the id of the source vertex and the destenation vertex, it's weight,
+ * it's info and it's tag which we use in the algorithm to check it's color.
+ * The numbers that represent colors of edges are the same as in Node class:
+ *      -1) White- Unvisited edge which we didn't discover yet
+ *      0) Gray- Unvisited edge which we already discovered
+ *      1) Black- Visited edge which we already left
+ */
 public class Edge implements EdgeData, Comparable<Edge> {
     
     private int src;
@@ -150,12 +159,21 @@ public class Edge implements EdgeData, Comparable<Edge> {
     }
     
     //endregion
-    
+
+    /**
+     * This fuction returns a string representation of this object
+     * @return String that represents this object
+     */
     @Override
     public String toString() {
         return this.src + "--" + this.weight + "->" + this.dest;
     }
-    
+
+    /**
+     * This function get an object the compare it to this object
+     * @param o The object we compare to this object
+     * @return True if they are equal, otherwise false
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
@@ -167,12 +185,21 @@ public class Edge implements EdgeData, Comparable<Edge> {
                 this.info.equals(e.getInfo()) &&
                 this.tag == e.getTag();
     }
-    
+
+    /**
+     * Since we have overridden equals we also are required to override hashCode
+     * @return the hashcode of the object
+     */
     @Override
     public int hashCode() {
         return Objects.hash(this.src, this.dest, this.weight, this.info, this.tag);
     }
-    
+
+    /**
+     * This function compare between two Edges
+     * @param o The Edge we want to compare to this Edge.
+     * @return The result of the comparison
+     */
     @Override
     public int compareTo(Edge o) {
         return Double.compare(this.getWeight(), o.getWeight());

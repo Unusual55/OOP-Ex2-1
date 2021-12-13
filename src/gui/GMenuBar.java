@@ -47,11 +47,12 @@ public class GMenuBar extends JMenuBar implements ActionListener {
     Graph gr;
     JMenuItem resetalgo;
     JMenu help;
-    JMenuItem gethelp;
+    JMenuItem gethelp, edgecount, nodecount;
     JMenu modes;
     JMenuItem lightmode;
     JMenuItem colormode;
     JMenuItem colorfrenzy;
+
 
     GMenuBar(DirectedWeightedGraphAlgorithms graph, GraphDisplay gd, Graph gp) {
         this.gr = gp;
@@ -114,6 +115,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
 
         gethelp=new JMenuItem("Help!");
         gethelp.addActionListener(this);
+        nodecount=new JMenuItem("Node Counter");
+        nodecount.addActionListener(this);
+        edgecount=new JMenuItem("Edge Counter");
+        edgecount.addActionListener(this);
 
         file.add(load);
         file.add(ng);
@@ -138,6 +143,8 @@ public class GMenuBar extends JMenuBar implements ActionListener {
         modes.add(colorfrenzy);
 
         help.add(gethelp);
+        help.add(nodecount);
+        help.add(edgecount);
 
         this.graph = graph;
         this.add(file);
@@ -151,7 +158,14 @@ public class GMenuBar extends JMenuBar implements ActionListener {
     /**
      * This fucntion controls the events in this class
      * every condition represent an event that a JMenuItem was clicked, each JMenuItem trigger a different event
-     *
+     * The event handler and the GUI handle the validation of any input the user might enter, so if we use a
+     * function from DirectedWeightedGraph or the DirectedWeightedGraphAlgorithms, it will send the input
+     * if and only if the input is valid and fit the proper function.
+     * For example, in the Add Eage panel, we allow the src and dest to be only integers but if they are
+     * integers but they are negative or the id of the node is not exist, then the input is still not valid
+     * and we won't use the connect function. The weight of the edge have to be positiove real number as well,
+     * if the weight is not real number, then the input is invalid, but if it is but it's not positive, then
+     * it's not valid input and we won't went send it to the function.
      * @param e
      */
     @Override
@@ -299,6 +313,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
          * GraphDisplay and then repaint the graph
          */
         else if(e.getSource()==zoomin){
+            if(this.graph.getGraph().nodeSize()==0){
+                JOptionPane.showMessageDialog(this, "You can't zoom in since there are 0 nodes");
+                return;
+            }
             try{
                 String input=JOptionPane.showInputDialog("Enter how much you want to zoom in.");
                 int count=Integer.parseInt(input);
@@ -323,6 +341,10 @@ public class GMenuBar extends JMenuBar implements ActionListener {
          * the GraphDisplay and then repaint the graph
          */
         else if(e.getSource()==zoomout){
+            if(this.graph.getGraph().nodeSize()==0){
+                JOptionPane.showMessageDialog(this, "You can't zoom out since there are 0 nodes");
+                return;
+            }
             try{
                 String input=JOptionPane.showInputDialog("Enter how much you want to zoom in.");
                 int count=Integer.parseInt(input);
@@ -347,9 +369,13 @@ public class GMenuBar extends JMenuBar implements ActionListener {
         else if(e.getSource()==gethelp){
             Help h=new Help();
         }
-//        else if(e.getSource()==resetalgo){
-//            this.gd.setRegularFlag();
-//        }
+        /**
+         * If the user clicked on reset algo, the function will reset the algorithm and repaint the graph in
+         * Light Mode.
+         */
+        else if(e.getSource()==resetalgo){
+            this.gd.resetAlgo();
+        }
         /**
          * If the user clicked on Light Mode the function will set the Set the Mode of the GraphDisplay
          * to LightMode
@@ -374,6 +400,12 @@ public class GMenuBar extends JMenuBar implements ActionListener {
         else if(e.getSource()==colorfrenzy){
             this.gd.setColorFrenzyMode();
             this.gd.repaint();
+        }
+        else if(e.getSource()==nodecount){
+            JOptionPane.showMessageDialog(this, "There are " + this.graph.getGraph().nodeSize() + " nodes in the graph.");
+        }
+        else if(e.getSource()==edgecount){
+            JOptionPane.showMessageDialog(this, "There are " + this.graph.getGraph().edgeSize() + " edges in the graph.");
         }
     }
 

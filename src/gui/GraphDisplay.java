@@ -171,7 +171,7 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         return new double[]{xfixed, yfixed};
     }
 
-//    public double[] CoordinatesTransformation(Point2D p) {
+//    public double[] CoordinatesTransformation(Po+CoordinatesTransformation(GeoLocation): double[]int2D p) {
 //        double dpx = this.BoundingBox[2] - this.BoundingBox[0];
 //        double dpy = this.BoundingBox[3] - this.BoundingBox[1];
 //        double dcx = this.BoundingBox[2] - p.getX();
@@ -349,12 +349,6 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
                 g2d.drawString("" + curr.getKey(), (int) coordinates[0], (int) coordinates[1]);
                 g2d.setColor(Color.BLUE);
             }
-//            else{
-//                g2d.setColor(Color.BLUE);
-//                g2d.fillOval((int)(coordinates[0] - this.WNode * this.Scale / 2), (int)(coordinates[1] - HNode * this.Scale / 2),
-//                        (int)(this.HNode * this.Scale / 2), (int)(this.WNode * this.Scale / 2));
-//                g2d.drawString("" + curr.getKey(), (int) coordinates[0], (int) coordinates[1]);
-//            }
         }
     }
 
@@ -539,6 +533,10 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
      */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        if(this.graph.nodeSize()==0){
+            JOptionPane.showMessageDialog(this, "You can't use zoom if there are 0 nodes");
+            return;
+        }
         int c = e.getScrollAmount();
         if (e.getWheelRotation() > 0) {
             this.Scale += c * 0.02;
@@ -731,5 +729,9 @@ public class GraphDisplay extends JPanel implements MouseListener, MouseMotionLi
         this.markededgesSP=new HashMap<>();
         this.markednodesSP=new HashSet<>();
         this.markednodesTSP=new HashSet<>();
+        this.drawflags=new boolean[]{true,false,false,false};
+        this.algoflags=new boolean[]{false, false, false};
+        this.setLightMode();
+        this.repaint();
     }
 }

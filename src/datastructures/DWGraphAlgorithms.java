@@ -115,6 +115,8 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
 
     /**
      * This function run a DFS on the graph
+     * https://en.wikipedia.org/wiki/Graph_traversal#Depth-first_search
+     * https://en.wikipedia.org/wiki/Depth-first_search
      * @param v
      * @param g
      */
@@ -141,7 +143,7 @@ public class DWGraphAlgorithms implements DirectedWeightedGraphAlgorithms {
 
     /**
      * This function create a transpose graph from this graph: in the regular graph every edge (u,v) will
-     * become (v,u)
+     * become (v,u) in the transposed graph
      * @return The transposed graph
      */
     private DirectedWeightedGraph transpose() {
